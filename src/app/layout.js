@@ -1,6 +1,6 @@
 export const metadata = {
   title: "AI_RADAR — 世界のAI情報をリアルタイムで",
-  description: "Reddit × Claude AIで世界のAIニュースをリアルタイム日本語翻訳",
+  description: "YouTube × HackerNews × Claude AIで世界のAIニュースをリアルタイム日本語翻訳",
 };
 
 export default function RootLayout({ children }) {
