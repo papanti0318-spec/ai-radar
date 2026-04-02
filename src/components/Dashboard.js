@@ -5,11 +5,11 @@ import { useState, useEffect } from "react";
 const CATEGORIES = ["全て", "研究", "ツール", "ビジネス", "モデル"];
 
 const YT_QUERIES = [
-  { query: "machine learning research 2025", category: "研究" },
-  { query: "LLM AI tools tutorial", category: "ツール" },
-  { query: "AI business technology", category: "ビジネス" },
-  { query: "GPT Claude Gemini model", category: "モデル" },
-  { query: "artificial intelligence news", category: "研究" },
+  { query: "machine learning research 2026", category: "研究" },
+  { query: "LLM AI tools tutorial 2026", category: "ツール" },
+  { query: "AI business enterprise technology", category: "ビジネス" },
+  { query: "GPT Claude Gemini AI model release", category: "モデル" },
+  { query: "artificial intelligence news latest", category: "研究" },
 ];
 
 const CATEGORY_COLORS = {
