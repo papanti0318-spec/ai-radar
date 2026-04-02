@@ -4,12 +4,12 @@ import { useState, useEffect } from "react";
 
 const CATEGORIES = ["全て", "研究", "ツール", "ビジネス", "モデル"];
 
-const SUBREDDITS = [
-  { name: "MachineLearning", category: "研究" },
-  { name: "LocalLLaMA", category: "ツール" },
-  { name: "artificial", category: "ビジネス" },
-  { name: "OpenAI", category: "モデル" },
-  { name: "ClaudeAI", category: "ツール" },
+const YT_QUERIES = [
+  { query: "machine learning research 2025", category: "研究" },
+  { query: "LLM AI tools tutorial", category: "ツール" },
+  { query: "AI business technology", category: "ビジネス" },
+  { query: "GPT Claude Gemini model", category: "モデル" },
+  { query: "artificial intelligence news", category: "研究" },
 ];
 
 const CATEGORY_COLORS = {
@@ -17,14 +17,14 @@ const CATEGORY_COLORS = {
 };
 
 const FALLBACK_NEWS = [
-  { id: "f1", title: "GPT-4o gets major update with better reasoning", titleJa: "GPT-4oが推論能力を大幅強化", subreddit: "OpenAI", author: "ai_watcher", score: 3420, num_comments: 287, created_utc: Math.floor(Date.now()/1000)-1800, permalink: "/r/OpenAI/comments/f1/", category: "モデル" },
-  { id: "f2", title: "Llama 3.3 running locally is absolutely insane", titleJa: "Llama 3.3のローカル動作が衝撃的な性能", subreddit: "LocalLLaMA", author: "llm_nerd", score: 2891, num_comments: 412, created_utc: Math.floor(Date.now()/1000)-3200, permalink: "/r/LocalLLaMA/comments/f2/", category: "ツール" },
-  { id: "f3", title: "New paper: LLMs autonomously write and verify proofs", titleJa: "新論文：LLMが数学的証明を自律的に生成・検証", subreddit: "MachineLearning", author: "ml_researcher", score: 2104, num_comments: 183, created_utc: Math.floor(Date.now()/1000)-5400, permalink: "/r/MachineLearning/comments/f3/", category: "研究" },
-  { id: "f4", title: "Claude helped me build an entire SaaS in one weekend", titleJa: "ClaudeでSaaSを週末だけで構築できた話", subreddit: "ClaudeAI", author: "indie_hacker", score: 1876, num_comments: 234, created_utc: Math.floor(Date.now()/1000)-7200, permalink: "/r/ClaudeAI/comments/f4/", category: "ツール" },
-  { id: "f5", title: "AI replacing jobs: 40% of tasks automatable", titleJa: "AI自動化で40%の業務が代替可能との新研究", subreddit: "artificial", author: "future_watcher", score: 1654, num_comments: 891, created_utc: Math.floor(Date.now()/1000)-9000, permalink: "/r/artificial/comments/f5/", category: "ビジネス" },
-  { id: "f6", title: "Cursor vs Copilot: comprehensive benchmark 2025", titleJa: "Cursor vs Copilot 2025年版徹底比較", subreddit: "LocalLLaMA", author: "dev_tools", score: 1432, num_comments: 167, created_utc: Math.floor(Date.now()/1000)-10800, permalink: "/r/LocalLLaMA/comments/f6/", category: "ツール" },
-  { id: "f7", title: "Anthropic releases new AI safety scaling research", titleJa: "AnthropicがAI安全性スケーリング研究を公開", subreddit: "MachineLearning", author: "safety_first", score: 1287, num_comments: 145, created_utc: Math.floor(Date.now()/1000)-12600, permalink: "/r/MachineLearning/comments/f7/", category: "研究" },
-  { id: "f8", title: "OpenAI valuation hits $300B after latest funding", titleJa: "OpenAIの評価額が最新資金調達で3000億ドルに", subreddit: "artificial", author: "vc_news", score: 987, num_comments: 543, created_utc: Math.floor(Date.now()/1000)-14400, permalink: "/r/artificial/comments/f8/", category: "ビジネス" },
+  { id: "f1", title: "GPT-4o gets major update with better reasoning", titleJa: "GPT-4oが推論能力を大幅強化", source: "OpenAI Official", author: "OpenAI Official", score: 342000, num_comments: 287, created_utc: Math.floor(Date.now()/1000)-1800, permalink: "https://www.youtube.com/results?search_query=GPT-4o", category: "モデル" },
+  { id: "f2", title: "Llama 3.3 running locally is absolutely insane performance", titleJa: "Llama 3.3のローカル動作が衝撃的な性能", source: "Two Minute Papers", author: "Two Minute Papers", score: 289000, num_comments: 412, created_utc: Math.floor(Date.now()/1000)-3200, permalink: "https://www.youtube.com/results?search_query=Llama+local", category: "ツール" },
+  { id: "f3", title: "New paper: LLMs autonomously write and verify mathematical proofs", titleJa: "新論文：LLMが数学的証明を自律的に生成・検証", source: "Yannic Kilcher", author: "Yannic Kilcher", score: 210400, num_comments: 183, created_utc: Math.floor(Date.now()/1000)-5400, permalink: "https://www.youtube.com/results?search_query=LLM+math+proof", category: "研究" },
+  { id: "f4", title: "Claude 3.5 Sonnet vs GPT-4o: Full Benchmark Comparison", titleJa: "Claude 3.5 Sonnet vs GPT-4o 完全ベンチマーク比較", source: "AI Explained", author: "AI Explained", score: 187600, num_comments: 234, created_utc: Math.floor(Date.now()/1000)-7200, permalink: "https://www.youtube.com/results?search_query=Claude+GPT+benchmark", category: "モデル" },
+  { id: "f5", title: "AI replacing jobs: 40% of tasks automatable by 2026", titleJa: "AI自動化で40%の業務が代替可能との新研究", source: "Bloomberg Technology", author: "Bloomberg Technology", score: 165400, num_comments: 891, created_utc: Math.floor(Date.now()/1000)-9000, permalink: "https://www.youtube.com/results?search_query=AI+jobs+automation", category: "ビジネス" },
+  { id: "f6", title: "Build AI Agent from Scratch: Complete Tutorial 2025", titleJa: "AIエージェントをゼロから構築：完全チュートリアル2025", source: "freeCodeCamp", author: "freeCodeCamp", score: 143200, num_comments: 167, created_utc: Math.floor(Date.now()/1000)-10800, permalink: "https://www.youtube.com/results?search_query=AI+agent+tutorial", category: "ツール" },
+  { id: "f7", title: "Anthropic releases new AI safety research: Constitutional AI v2", titleJa: "AnthropicがConstitutional AI v2安全性研究を公開", source: "Lex Fridman", author: "Lex Fridman", score: 128700, num_comments: 145, created_utc: Math.floor(Date.now()/1000)-12600, permalink: "https://www.youtube.com/results?search_query=Anthropic+AI+safety", category: "研究" },
+  { id: "f8", title: "OpenAI valuation hits $300B: What it means for the industry", titleJa: "OpenAIの評価額3000億ドル突破：業界への影響を解説", source: "CNBC", author: "CNBC", score: 98700, num_comments: 543, created_utc: Math.floor(Date.now()/1000)-14400, permalink: "https://www.youtube.com/results?search_query=OpenAI+valuation", category: "ビジネス" },
 ];
 
 function timeLabel(utc) {
@@ -33,6 +33,12 @@ function timeLabel(utc) {
   if (diff < 3600) return `${Math.floor(diff / 60)}分前`;
   if (diff < 86400) return `${Math.floor(diff / 3600)}時間前`;
   return `${Math.floor(diff / 86400)}日前`;
+}
+
+function formatViews(n) {
+  if (n >= 1000000) return `${(n / 1000000).toFixed(1)}M`;
+  if (n >= 1000) return `${(n / 1000).toFixed(0)}K`;
+  return String(n);
 }
 
 async function callClaude(messages, maxTokens = 1000) {
@@ -121,8 +127,8 @@ function CommentCard({ comment, index }) {
       borderRadius: "6px", padding: "12px 14px", marginBottom: "10px",
     }}>
       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-        <span style={{ color: "#4b5563", fontSize: "11px", fontFamily: "monospace" }}>u/{comment.author}</span>
-        <span style={{ color: "#f59e0b", fontSize: "11px", fontFamily: "monospace" }}>▲ {comment.score?.toLocaleString()}</span>
+        <span style={{ color: "#4b5563", fontSize: "11px", fontFamily: "monospace" }}>{comment.author}</span>
+        <span style={{ color: "#f59e0b", fontSize: "11px", fontFamily: "monospace" }}>👍 {comment.score?.toLocaleString()}</span>
       </div>
       {comment.bodyJa && (
         <div style={{ color: "#bfdbfe", fontSize: "12px", lineHeight: "1.8", fontFamily: "monospace", marginBottom: "8px" }}>
@@ -167,9 +173,9 @@ function DetailPanel({ item, onClose }) {
     setSummaryLoading(true);
     try {
       const text = await callClaude([{ role: "user", content:
-        `以下のReddit投稿を分析してJSONのみ返してください（前置き不要）。
+        `以下のYouTube動画を分析してJSONのみ返してください（前置き不要）。
 タイトル: ${it.title}
-サブレディット: r/${it.subreddit}
+チャンネル: ${it.source}
 カテゴリ: ${it.category}
 
 {"titleJa":"日本語タイトル（40文字以内）","translation":"内容の日本語要約（120字以内）","points":["ポイント1（25字以内）","ポイント2（25字以内）","ポイント3（25字以内）"],"impact":"日本への影響（45字以内）","level":"初心者|中級者|上級者"}`
@@ -185,27 +191,14 @@ function DetailPanel({ item, onClose }) {
     setCommentsLoading(true);
     setCommentsError(null);
     try {
-      let rawComments = [];
-      try {
-        const res = await fetch(`/api/reddit-comments?permalink=${encodeURIComponent(it.permalink)}`);
-        const data = await res.json();
-        const commentData = data?.[1]?.data?.children || [];
-        rawComments = commentData
-          .filter(c => c.kind === "t1" && c.data.body && c.data.body !== "[deleted]")
-          .slice(0, 6)
-          .map(c => ({ author: c.data.author, score: c.data.score, body: c.data.body }));
-      } catch { /* fall through to generation */ }
-
-      if (rawComments.length === 0) {
-        const text = await callClaude([{ role: "user", content:
-          `以下のReddit投稿に対して、AI専門家・エンジニア・経営者など多様な視点からのリアルなコメントを5件生成してください。JSONのみ:\n[{"author":"名前","score":数値,"body":"英語コメント（50語以内）"}]\n\nタイトル: ${it.title}\nサブレディット: r/${it.subreddit}`
-        }], 800);
-        rawComments = JSON.parse(text);
-      }
+      const text = await callClaude([{ role: "user", content:
+        `以下のYouTube動画に対して、AI専門家・エンジニア・経営者など多様な視点からのリアルなコメントを5件生成してください。JSONのみ:\n[{"author":"名前","score":数値,"body":"英語コメント（50語以内）"}]\n\nタイトル: ${it.title}\nチャンネル: ${it.source}`
+      }], 800);
+      const rawComments = JSON.parse(text);
 
       const bodies = rawComments.map((c, i) => `${i}: ${c.body}`).join("\n");
       const transText = await callClaude([{ role: "user", content:
-        `以下のRedditコメントを日本語に翻訳してください。JSONの配列のみ返してください:\n["翻訳0","翻訳1",...]\n各60文字以内。\n\n${bodies}`
+        `以下のコメントを日本語に翻訳してください。JSONの配列のみ返してください:\n["翻訳0","翻訳1",...]\n各60文字以内。\n\n${bodies}`
       }], 600);
       const translations = JSON.parse(transText);
       setComments(rawComments.map((c, i) => ({ ...c, bodyJa: translations[i] || c.body })));
@@ -235,24 +228,23 @@ function DetailPanel({ item, onClose }) {
         <div style={{ overflowY: "auto", flex: 1, padding: "20px", display: "flex", flexDirection: "column", gap: "16px" }}>
           <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
             <span style={{ background: catColor+"22", color: catColor, border: `1px solid ${catColor}44`, borderRadius: "4px", padding: "2px 10px", fontSize: "11px", fontFamily: "monospace" }}>{item.category}</span>
-            <span style={{ color: "#ef4444", background: "#ef444415", border: "1px solid #ef444430", borderRadius: "4px", padding: "2px 8px", fontSize: "11px", fontFamily: "monospace" }}>💬 r/{item.subreddit}</span>
-            {item.score > 500 && <span style={{ color: "#f97316", fontSize: "11px", animation: "pulse 2s infinite" }}>🔥 人気投稿</span>}
+            <span style={{ color: "#ff0000", background: "#ff000015", border: "1px solid #ff000030", borderRadius: "4px", padding: "2px 8px", fontSize: "11px", fontFamily: "monospace" }}>▶ YouTube</span>
+            {item.score > 100000 && <span style={{ color: "#f97316", fontSize: "11px", animation: "pulse 2s infinite" }}>🔥 人気動画</span>}
           </div>
 
           <div style={{ color: "#f1f5f9", fontSize: "15px", fontWeight: "700", lineHeight: "1.5", fontFamily: "monospace" }}>{item.title}</div>
 
           <div style={{ background: "#0a0f1a", border: "1px solid #1f2937", borderRadius: "8px", padding: "14px 16px", display: "flex", flexDirection: "column", gap: "9px" }}>
             <div style={{ color: "#374151", fontSize: "11px", fontFamily: "monospace" }}>── ソース情報</div>
-            <Row label="メディア" value="💬 Reddit" color="#ef4444" />
-            <Row label="コミュニティ" value={`r/${item.subreddit}`} color="#ef4444" />
-            <Row label="投稿者" value={`u/${item.author}`} color="#9ca3af" />
-            <Row label="スコア" value={`▲ ${item.score?.toLocaleString()}`} color="#f59e0b" />
+            <Row label="メディア" value="▶ YouTube" color="#ff0000" />
+            <Row label="チャンネル" value={item.source} color="#ff6666" />
+            <Row label="視聴回数" value={`▶ ${formatViews(item.score)}`} color="#f59e0b" />
             <Row label="コメント" value={`${item.num_comments?.toLocaleString()} 件`} color="#60a5fa" />
             <Row label="投稿時刻" value={timeLabel(item.created_utc)} color="#9ca3af" />
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <span style={{ color: "#6b7280", fontSize: "12px" }}>元記事</span>
-              <a href={`https://reddit.com${item.permalink}`} target="_blank" rel="noopener noreferrer" style={{ color: "#60a5fa", fontSize: "11px", fontFamily: "monospace", textDecoration: "none" }}>
-                Redditで開く →
+              <span style={{ color: "#6b7280", fontSize: "12px" }}>元動画</span>
+              <a href={item.permalink} target="_blank" rel="noopener noreferrer" style={{ color: "#ff6666", fontSize: "11px", fontFamily: "monospace", textDecoration: "none" }}>
+                YouTubeで開く →
               </a>
             </div>
           </div>
@@ -306,7 +298,7 @@ function DetailPanel({ item, onClose }) {
           {tab === "comments" && (
             <div>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-                <span style={{ color: "#60a5fa", fontSize: "12px", fontFamily: "monospace" }}>💬 専門家の反応（AI翻訳済み）</span>
+                <span style={{ color: "#60a5fa", fontSize: "12px", fontFamily: "monospace" }}>💬 専門家の反応（AI生成）</span>
                 {comments.length > 0 && <span style={{ color: "#374151", fontSize: "11px", fontFamily: "monospace" }}>{comments.length}件</span>}
               </div>
               {commentsLoading && [1,2,3].map(i => (
@@ -323,7 +315,7 @@ function DetailPanel({ item, onClose }) {
               {!commentsLoading && !commentsError && comments.length > 0 && (
                 <div>
                   <div style={{ background: "#0a1a2a", border: "1px solid #1e3a5f", borderRadius: "6px", padding: "8px 12px", marginBottom: "12px" }}>
-                    <span style={{ color: "#4b5563", fontSize: "11px", fontFamily: "monospace" }}>ℹ️ スコア上位コメントをAI翻訳。原文は各コメントで確認できます。</span>
+                    <span style={{ color: "#4b5563", fontSize: "11px", fontFamily: "monospace" }}>ℹ️ AI専門家・エンジニアの視点からコメントをClaudeが生成・翻訳しています。</span>
                   </div>
                   {comments.map((c, i) => <CommentCard key={i} comment={c} index={i} />)}
                 </div>
@@ -351,11 +343,11 @@ function NewsCard({ item, isNew, onClick }) {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
         <div style={{ display: "flex", gap: "6px" }}>
           <span style={{ background: catColor+"22", color: catColor, border: `1px solid ${catColor}44`, borderRadius: "4px", padding: "2px 8px", fontSize: "10px", fontFamily: "monospace" }}>{item.category}</span>
-          <span style={{ color: "#ef4444", background: "#ef444415", border: "1px solid #ef444430", borderRadius: "3px", padding: "2px 6px", fontSize: "10px", fontFamily: "monospace" }}>r/{item.subreddit}</span>
+          <span style={{ color: "#ff6666", background: "#ff000015", border: "1px solid #ff000030", borderRadius: "3px", padding: "2px 6px", fontSize: "10px", fontFamily: "monospace" }}>▶ YT</span>
         </div>
         <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
-          {item.score > 500 && <span style={{ fontSize: "10px" }}>🔥</span>}
-          <span style={{ color: "#4b5563", fontSize: "10px", fontFamily: "monospace" }}>▲{item.score?.toLocaleString()}</span>
+          {item.score > 100000 && <span style={{ fontSize: "10px" }}>🔥</span>}
+          <span style={{ color: "#4b5563", fontSize: "10px", fontFamily: "monospace" }}>▶{formatViews(item.score)}</span>
           <span style={{ color: "#374151", fontSize: "10px", fontFamily: "monospace" }}>{timeLabel(item.created_utc)}</span>
         </div>
       </div>
@@ -366,7 +358,7 @@ function NewsCard({ item, isNew, onClick }) {
         </div>
       )}
       <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <span style={{ color: "#374151", fontSize: "10px", fontFamily: "monospace" }}>💬 {item.num_comments}</span>
+        <span style={{ color: "#374151", fontSize: "10px", fontFamily: "monospace" }}>💬 {item.num_comments?.toLocaleString()}</span>
         <span style={{ color: hover ? "#34d399" : "#374151", fontSize: "10px", fontFamily: "monospace", transition: "color 0.2s" }}>詳細 + AI翻訳 →</span>
       </div>
     </div>
@@ -378,7 +370,7 @@ export default function Dashboard() {
   const [filter, setFilter] = useState("全て");
   const [newIds, setNewIds] = useState([]);
   const [status, setStatus] = useState("起動中...");
-  const [nextUpdate, setNextUpdate] = useState(60);
+  const [nextUpdate, setNextUpdate] = useState(300);
   const [tick, setTick] = useState(0);
   const [selected, setSelected] = useState(null);
   const [lastUpdate, setLastUpdate] = useState(null);
@@ -387,18 +379,18 @@ export default function Dashboard() {
   useEffect(() => {
     const t = setInterval(() => {
       setTick(n => n + 1);
-      setNextUpdate(prev => prev <= 1 ? 60 : prev - 1);
+      setNextUpdate(prev => prev <= 1 ? 300 : prev - 1);
     }, 1000);
     return () => clearInterval(t);
   }, []);
 
   useEffect(() => {
-    if (tick === 0 || nextUpdate === 60) fetchAll();
-  }, [tick === 0, nextUpdate === 60]);
+    if (tick === 0 || nextUpdate === 300) fetchAll();
+  }, [tick === 0, nextUpdate === 300]);
 
   async function fetchAll() {
-    setStatus("Reddit取得中...");
-    const results = await fetchReddit();
+    setStatus("YouTube取得中...");
+    const results = await fetchYouTube();
     if (results.length > 0) {
       setUsingFallback(false);
       setStatus("AI翻訳中...");
@@ -421,34 +413,45 @@ export default function Dashboard() {
     setTimeout(() => setNewIds([]), 3000);
   }
 
-  async function fetchReddit() {
+  async function fetchYouTube() {
     const results = [];
-    for (const sub of SUBREDDITS) {
+    for (const yt of YT_QUERIES) {
       try {
-        const res = await fetch(`/api/reddit?sub=${sub.name}`);
+        const res = await fetch(`/api/youtube?q=${encodeURIComponent(yt.query)}`);
         const data = await res.json();
-        const posts = data?.data?.children || [];
-        posts.forEach(({ data: p }) => {
-          if (!p.stickied && p.title && p.score > 10) {
-            results.push({
-              id: p.id, title: p.title,
-              subreddit: p.subreddit, author: p.author,
-              score: p.score, num_comments: p.num_comments,
-              created_utc: p.created_utc, permalink: p.permalink,
-              category: sub.category, titleJa: null,
-            });
-          }
+        const items = data?.items || [];
+        items.forEach((v) => {
+          const publishedAt = new Date(v.publishedAt);
+          results.push({
+            id: v.id,
+            title: v.title,
+            source: v.channelTitle,
+            author: v.channelTitle,
+            score: v.viewCount,
+            num_comments: v.commentCount,
+            created_utc: Math.floor(publishedAt.getTime() / 1000),
+            permalink: `https://www.youtube.com/watch?v=${v.id}`,
+            category: yt.category,
+            titleJa: null,
+          });
         });
       } catch { /* skip */ }
     }
-    return results.sort((a, b) => b.score - a.score).slice(0, 12);
+    // Deduplicate by id
+    const seen = new Set();
+    const unique = results.filter(r => {
+      if (seen.has(r.id)) return false;
+      seen.add(r.id);
+      return true;
+    });
+    return unique.sort((a, b) => b.score - a.score).slice(0, 12);
   }
 
   async function batchTranslate(posts) {
     try {
       const lines = posts.map((p, i) => `${i}: ${p.title}`).join("\n");
       const text = await callClaude([{ role: "user", content:
-        `以下のReddit投稿タイトルを日本語に翻訳してください。JSONの配列のみ返してください（説明不要）:\n["翻訳0","翻訳1",...]\n各40文字以内。\n\n${lines}`
+        `以下のYouTube動画タイトルを日本語に翻訳してください。JSONの配列のみ返してください（説明不要）:\n["翻訳0","翻訳1",...]\n各40文字以内。\n\n${lines}`
       }], 600);
       const translations = JSON.parse(text);
       return posts.map((p, i) => ({ ...p, titleJa: translations[i] || null }));
@@ -460,7 +463,7 @@ export default function Dashboard() {
   async function generateNews() {
     try {
       const text = await callClaude([{ role: "user", content:
-        `AI業界のリアルなReddit風ニュースを8件生成してください。JSONのみ:\n[{"id":"g1","title":"英語タイトル","titleJa":"日本語（40字以内）","subreddit":"MachineLearning|LocalLLaMA|artificial|OpenAI|ClaudeAI","author":"名前","score":数値,"num_comments":数値,"created_utc":${Math.floor(Date.now()/1000)-3600},"permalink":"/r/sub/comments/xxx/","category":"研究|ツール|ビジネス|モデル"}]`
+        `AI業界のリアルなYouTube動画風ニュースを8件生成してください。JSONのみ:\n[{"id":"g1","title":"英語タイトル","titleJa":"日本語（40字以内）","source":"チャンネル名","author":"チャンネル名","score":数値,"num_comments":数値,"created_utc":${Math.floor(Date.now()/1000)-3600},"permalink":"https://www.youtube.com/watch?v=dQw4w9WgXcQ","category":"研究|ツール|ビジネス|モデル"}]`
       }]);
       return JSON.parse(text);
     } catch {
@@ -481,7 +484,7 @@ export default function Dashboard() {
             <div>
               <div style={{ fontSize: "20px", fontWeight: "800", letterSpacing: "0.15em", color: "#f0fdf4" }}>▶ AI_RADAR</div>
               <div style={{ color: "#374151", fontSize: "11px", marginTop: "2px" }}>
-                Reddit × Claude AI — リアルタイム翻訳
+                YouTube × Claude AI — リアルタイム翻訳
                 {usingFallback && <span style={{ color: "#f59e0b", marginLeft: "8px" }}>[AI生成モード]</span>}
               </div>
             </div>
@@ -498,8 +501,8 @@ export default function Dashboard() {
 
         {/* Source badges */}
         <div style={{ display: "flex", gap: "8px", padding: "10px 24px", borderBottom: "1px solid #111827", background: "#080a10", overflowX: "auto" }}>
-          {SUBREDDITS.map(s => (
-            <span key={s.name} style={{ color: "#ef4444", background: "#ef444410", border: "1px solid #ef444430", borderRadius: "4px", padding: "2px 8px", fontSize: "10px", fontFamily: "monospace", whiteSpace: "nowrap" }}>r/{s.name}</span>
+          {YT_QUERIES.map(yt => (
+            <span key={yt.query} style={{ color: "#ff6666", background: "#ff000010", border: "1px solid #ff000030", borderRadius: "4px", padding: "2px 8px", fontSize: "10px", fontFamily: "monospace", whiteSpace: "nowrap" }}>▶ {yt.query}</span>
           ))}
           {lastUpdate && <span style={{ marginLeft: "auto", color: "#374151", fontSize: "10px", whiteSpace: "nowrap", alignSelf: "center" }}>更新: {lastUpdate.toLocaleTimeString("ja-JP")}</span>}
         </div>
@@ -539,8 +542,8 @@ export default function Dashboard() {
         )}
 
         <div style={{ borderTop: "1px solid #111827", padding: "12px 24px", display: "flex", justifyContent: "space-between", color: "#1f2937", fontSize: "11px" }}>
-          <span>AI_RADAR v0.5</span>
-          <span>Reddit × Claude AI</span>
+          <span>AI_RADAR v0.6</span>
+          <span>YouTube × Claude AI</span>
         </div>
       </div>
       <DetailPanel item={selected} onClose={() => setSelected(null)} />
