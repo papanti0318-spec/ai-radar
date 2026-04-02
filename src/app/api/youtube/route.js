@@ -47,3 +47,4 @@ export async function GET(req) {
     return Response.json({ error: "YouTube fetch failed", items: [] }, { status: 500 });
   }
 }
+// Environment variables verified 2026年 4月  2日 木曜日 15:21:06    
