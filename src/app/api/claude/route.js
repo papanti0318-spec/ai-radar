@@ -18,3 +18,4 @@ export async function POST(req) {
   const data = await res.json();
   return Response.json(data);
 }
+// Environment variables updated with Anthropic API key
