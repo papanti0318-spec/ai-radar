@@ -445,7 +445,7 @@ function YouTubeTranscriptPanel() {
 
       setTranscriptLang(transcriptData.lang);
       const fullText = transcriptData.transcript;
-      const truncated = fullText.length > 8000 ? fullText.slice(0, 8000) + "..." : fullText;
+      const truncated = fullText.slice(0, 3000);
 
       setStep("AIが整形中...");
       const text = await callClaude([{ role: "user", content:
@@ -456,14 +456,14 @@ ${truncated}
 
 以下のJSON形式で返してください:
 {"summary":"3行まとめ（各行は改行で区切る、各行40文字以内）","detail":"詳細記事（ニュース記事のように整形、300〜500文字程度）","fullText":"字幕全文を読みやすく整形（句読点・改行を適切に追加）"}`
-      }], 4000);
+      }], 4096);
 
       let parsed;
       try {
         parsed = JSON.parse(text);
       } catch (parseErr) {
         console.error("Transcript analysis JSON parse failed. Raw:", text);
-        throw new Error(`JSON parse failed: ${parseErr.message}`);
+        throw new Error("字幕が長すぎます。別の動画を試してください。");
       }
       setResult(parsed);
     } catch (e) {

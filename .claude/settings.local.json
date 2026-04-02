@@ -28,7 +28,8 @@
       "Bash(curl -s \"https://api.github.com/repos/distubejs/ytdl-core\")",
       "Bash(npm view:*)",
       "WebFetch(domain:supadata.ai)",
-      "WebFetch(domain:docs.supadata.ai)"
+      "WebFetch(domain:docs.supadata.ai)",
+      "Bash(curl -s http://localhost:3000/api/youtube-transcript -X POST -H \"Content-Type: application/json\" -d '{\"url\":\"https://www.youtube.com/watch?v=dQw4w9WgXcQ\"}')"
     ]
   }
 }
