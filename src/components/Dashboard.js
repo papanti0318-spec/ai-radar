@@ -423,7 +423,9 @@ function YouTubeTranscriptPanel() {
   const [error, setError] = useState(null);
   const [result, setResult] = useState(null);
   const [showFull, setShowFull] = useState(false);
+  const [showRaw, setShowRaw] = useState(false);
   const [transcriptLang, setTranscriptLang] = useState(null);
+  const [rawTranscript, setRawTranscript] = useState("");
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -432,7 +434,9 @@ function YouTubeTranscriptPanel() {
     setError(null);
     setResult(null);
     setShowFull(false);
+    setShowRaw(false);
     setTranscriptLang(null);
+    setRawTranscript("");
     try {
       setStep("字幕を取得中...");
       const transcriptRes = await fetch("/api/youtube-transcript", {
@@ -445,26 +449,51 @@ function YouTubeTranscriptPanel() {
 
       setTranscriptLang(transcriptData.lang);
       const fullText = transcriptData.transcript;
-      const truncated = fullText.slice(0, 3000);
+      setRawTranscript(fullText);
 
-      setStep("AIが整形中...");
-      const text = await callClaude([{ role: "user", content:
-        `以下のYouTube動画の字幕テキストを分析して、JSONのみ返してください（前置き不要）。
+      // Step 1: 要約＋詳細（字幕全文を最大30,000文字送る、出力は短い）
+      setStep("AI要約を生成中...");
+      const summaryInput = fullText.slice(0, 30000);
+      const summaryText = await callClaude([{ role: "user", content:
+        `以下のYouTube動画の字幕テキスト全文を分析して、JSONのみ返してください（前置き不要）。
 
-字幕テキスト:
-${truncated}
+字幕テキスト（${fullText.length.toLocaleString()}文字）:
+${summaryInput}
 
 以下のJSON形式で返してください:
-{"summary":"3行まとめ（各行は改行で区切る、各行40文字以内）","detail":"詳細記事（ニュース記事のように整形、300〜500文字程度）","fullText":"字幕全文を読みやすく整形（句読点・改行を適切に追加）"}`
-      }], 4096);
+{"summary":"3行まとめ（各行は改行で区切る、各行40文字以内）","detail":"詳細記事（ニュース記事のように整形、500〜800文字程度、動画全体の内容を網羅）"}`
+      }], 2048);
 
       let parsed;
       try {
-        parsed = JSON.parse(text);
+        parsed = JSON.parse(summaryText);
       } catch (parseErr) {
-        console.error("Transcript analysis JSON parse failed. Raw:", text);
-        throw new Error("字幕が長すぎます。別の動画を試してください。");
+        console.error("Summary JSON parse failed. Raw:", summaryText);
+        throw new Error("要約の生成に失敗しました。再試行してください。");
       }
+
+      // Step 2: 整形全文（5,000文字ずつチャンク分割して順番に処理）
+      const CHUNK_SIZE = 5000;
+      const chunks = [];
+      for (let i = 0; i < fullText.length; i += CHUNK_SIZE) {
+        chunks.push(fullText.slice(i, i + CHUNK_SIZE));
+      }
+
+      let formattedParts = [];
+      for (let i = 0; i < chunks.length; i++) {
+        setStep(`全文整形中... (${i + 1}/${chunks.length})`);
+        const chunkText = await callClaude([{ role: "user", content:
+          `以下のYouTube字幕テキスト（パート${i + 1}/${chunks.length}）を読みやすい日本語に整形してください。
+句読点・改行を適切に追加し、自然な文章にしてください。
+JSONではなくプレーンテキストのみ返してください（前置き・説明不要）。
+
+字幕テキスト:
+${chunks[i]}`
+        }], 4096);
+        formattedParts.push(chunkText);
+      }
+
+      parsed.fullText = formattedParts.join("\n\n");
       setResult(parsed);
     } catch (e) {
       console.error("YouTube transcript error:", e);
@@ -526,9 +555,10 @@ ${truncated}
 
       {result && !loading && (
         <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-          {transcriptLang && (
-            <div style={{ display: "flex", gap: "8px" }}>
-              <span style={{ background: "#34d39922", color: "#34d399", border: "1px solid #34d39944", borderRadius: "4px", padding: "2px 10px", fontSize: "11px", fontFamily: "monospace" }}>字幕言語: {transcriptLang}</span>
+          {(transcriptLang || rawTranscript) && (
+            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+              {transcriptLang && <span style={{ background: "#34d39922", color: "#34d399", border: "1px solid #34d39944", borderRadius: "4px", padding: "2px 10px", fontSize: "11px", fontFamily: "monospace" }}>字幕言語: {transcriptLang}</span>}
+              {rawTranscript && <span style={{ background: "#60a5fa22", color: "#60a5fa", border: "1px solid #60a5fa44", borderRadius: "4px", padding: "2px 10px", fontSize: "11px", fontFamily: "monospace" }}>字幕: {rawTranscript.length.toLocaleString()}文字</span>}
             </div>
           )}
           {/* 3行まとめ */}
@@ -562,11 +592,33 @@ ${truncated}
               <span style={{ color: "#4b5563", fontSize: "11px" }}>{showFull ? "▲ 閉じる" : "▼ 開く"}</span>
             </button>
             {showFull && (
-              <div style={{ padding: "16px", maxHeight: "400px", overflowY: "auto" }}>
+              <div style={{ padding: "16px", maxHeight: "500px", overflowY: "auto" }}>
                 <div style={{ color: "#9ca3af", fontSize: "12px", lineHeight: "2.0", fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{result.fullText}</div>
               </div>
             )}
           </div>
+
+          {/* 生テキストトグル */}
+          {rawTranscript && (
+            <div style={{ background: "linear-gradient(135deg,#0a1628,#0d1f2d)", border: "1px solid #1e3a5f", borderRadius: "8px", overflow: "hidden" }}>
+              <button
+                onClick={() => setShowRaw(!showRaw)}
+                style={{
+                  width: "100%", background: "transparent", border: "none", borderBottom: showRaw ? "1px solid #1e3a5f" : "none",
+                  padding: "14px 16px", display: "flex", justifyContent: "space-between", alignItems: "center",
+                  cursor: "pointer", color: "#4b5563", fontSize: "12px", fontFamily: "monospace",
+                }}
+              >
+                <span>④ 生テキスト（元の字幕データ）</span>
+                <span style={{ fontSize: "11px" }}>{showRaw ? "▲ 閉じる" : "▼ 開く"}</span>
+              </button>
+              {showRaw && (
+                <div style={{ padding: "16px", maxHeight: "400px", overflowY: "auto" }}>
+                  <div style={{ color: "#4b5563", fontSize: "11px", lineHeight: "1.8", fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{rawTranscript}</div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>
