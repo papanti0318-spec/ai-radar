@@ -416,6 +416,151 @@ function NewsCard({ item, isNew, onClick }) {
   );
 }
 
+function YouTubeTranscriptPanel() {
+  const [url, setUrl] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [result, setResult] = useState(null);
+  const [showFull, setShowFull] = useState(false);
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    if (!url.trim()) return;
+    setLoading(true);
+    setError(null);
+    setResult(null);
+    setShowFull(false);
+    try {
+      const transcriptRes = await fetch("/api/youtube-transcript", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: url.trim() }),
+      });
+      const transcriptData = await transcriptRes.json();
+      if (transcriptData.error) throw new Error(transcriptData.error);
+
+      const fullText = transcriptData.transcript;
+      const truncated = fullText.length > 8000 ? fullText.slice(0, 8000) + "..." : fullText;
+
+      const text = await callClaude([{ role: "user", content:
+        `以下のYouTube動画の字幕テキストを分析して、JSONのみ返してください（前置き不要）。
+
+字幕テキスト:
+${truncated}
+
+以下のJSON形式で返してください:
+{"summary":"3行まとめ（各行は改行で区切る、各行40文字以内）","detail":"詳細記事（ニュース記事のように整形、300〜500文字程度）","fullText":"字幕全文を読みやすく整形（句読点・改行を適切に追加）"}`
+      }], 4000);
+
+      let parsed;
+      try {
+        parsed = JSON.parse(text);
+      } catch (parseErr) {
+        console.error("Transcript analysis JSON parse failed. Raw:", text);
+        throw new Error(`JSON parse failed: ${parseErr.message}`);
+      }
+      setResult(parsed);
+    } catch (e) {
+      console.error("YouTube transcript error:", e);
+      setError(e.message);
+    }
+    setLoading(false);
+  }
+
+  return (
+    <div style={{ padding: "20px 24px 40px", maxWidth: "800px", margin: "0 auto" }}>
+      <div style={{ marginBottom: "20px" }}>
+        <div style={{ color: "#34d399", fontSize: "14px", fontFamily: "monospace", marginBottom: "6px" }}>▶ YouTube字幕 → AI整形</div>
+        <div style={{ color: "#4b5563", fontSize: "11px", fontFamily: "monospace" }}>YouTube動画のURLを入力すると、字幕を取得してClaudeが日本語で整形します</div>
+      </div>
+
+      <form onSubmit={handleSubmit} style={{ display: "flex", gap: "8px", marginBottom: "20px" }}>
+        <input
+          type="text"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          placeholder="https://www.youtube.com/watch?v=..."
+          style={{
+            flex: 1, background: "#0f1117", border: "1px solid #1f2937", borderRadius: "6px",
+            padding: "10px 14px", color: "#e2e8f0", fontSize: "13px", fontFamily: "monospace",
+            outline: "none",
+          }}
+          onFocus={(e) => e.target.style.borderColor = "#3b82f6"}
+          onBlur={(e) => e.target.style.borderColor = "#1f2937"}
+        />
+        <button
+          type="submit"
+          disabled={loading || !url.trim()}
+          style={{
+            background: loading ? "#1e3a5f" : "#34d399", color: loading ? "#60a5fa" : "#000",
+            border: "none", borderRadius: "6px", padding: "10px 20px",
+            fontSize: "12px", fontFamily: "monospace", fontWeight: "700",
+            cursor: loading ? "not-allowed" : "pointer", whiteSpace: "nowrap",
+            opacity: !url.trim() ? 0.5 : 1, transition: "all 0.2s",
+          }}
+        >
+          {loading ? "取得中..." : "字幕を取得"}
+        </button>
+      </form>
+
+      {loading && (
+        <div style={{ background: "linear-gradient(135deg,#0a1628,#0d1f2d)", border: "1px solid #1e3a5f", borderRadius: "8px", padding: "20px" }}>
+          <Shimmer lines={5} />
+          <div style={{ color: "#4b5563", fontSize: "11px", fontFamily: "monospace", marginTop: "12px", textAlign: "center" }}>字幕を取得してAIが整形中...</div>
+        </div>
+      )}
+
+      {error && !loading && (
+        <div style={{ background: "#1a0a0a", border: "1px solid #7f1d1d", borderRadius: "8px", padding: "16px", display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
+          <div style={{ color: "#fca5a5", fontSize: "12px", fontFamily: "monospace" }}>{error}</div>
+          <button onClick={handleSubmit} style={{ background: "#1e3a5f", border: "1px solid #3b82f6", color: "#60a5fa", padding: "6px 16px", borderRadius: "6px", cursor: "pointer", fontSize: "11px", fontFamily: "monospace" }}>🔄 再試行</button>
+        </div>
+      )}
+
+      {result && !loading && (
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          {/* 3行まとめ */}
+          <div style={{ background: "linear-gradient(135deg,#0a1628,#0d1f2d)", border: "1px solid #1e3a5f", borderRadius: "8px", padding: "16px" }}>
+            <div style={{ color: "#60a5fa", fontSize: "12px", fontFamily: "monospace", marginBottom: "12px" }}>① 3行まとめ</div>
+            {result.summary.split("\n").map((line, i) => (
+              <div key={i} style={{ display: "flex", gap: "8px", marginBottom: "7px" }}>
+                <span style={{ color: "#34d399", fontFamily: "monospace", fontSize: "12px", flexShrink: 0 }}>0{i + 1}</span>
+                <span style={{ color: "#e2e8f0", fontSize: "13px", lineHeight: "1.7", fontFamily: "monospace" }}>{line}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* 詳細 */}
+          <div style={{ background: "linear-gradient(135deg,#0a1628,#0d1f2d)", border: "1px solid #1e3a5f", borderRadius: "8px", padding: "16px" }}>
+            <div style={{ color: "#60a5fa", fontSize: "12px", fontFamily: "monospace", marginBottom: "12px" }}>② 詳細</div>
+            <div style={{ color: "#bfdbfe", fontSize: "13px", lineHeight: "2.0", fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{result.detail}</div>
+          </div>
+
+          {/* 全文トグル */}
+          <div style={{ background: "linear-gradient(135deg,#0a1628,#0d1f2d)", border: "1px solid #1e3a5f", borderRadius: "8px", overflow: "hidden" }}>
+            <button
+              onClick={() => setShowFull(!showFull)}
+              style={{
+                width: "100%", background: "transparent", border: "none", borderBottom: showFull ? "1px solid #1e3a5f" : "none",
+                padding: "14px 16px", display: "flex", justifyContent: "space-between", alignItems: "center",
+                cursor: "pointer", color: "#60a5fa", fontSize: "12px", fontFamily: "monospace",
+              }}
+            >
+              <span>③ 全文（整形済み）</span>
+              <span style={{ color: "#4b5563", fontSize: "11px" }}>{showFull ? "▲ 閉じる" : "▼ 開く"}</span>
+            </button>
+            {showFull && (
+              <div style={{ padding: "16px", maxHeight: "400px", overflowY: "auto" }}>
+                <div style={{ color: "#9ca3af", fontSize: "12px", lineHeight: "2.0", fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{result.fullText}</div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const [news, setNews] = useState([]);
   const [filter, setFilter] = useState("全て");
@@ -426,6 +571,7 @@ export default function Dashboard() {
   const [selected, setSelected] = useState(null);
   const [lastUpdate, setLastUpdate] = useState(null);
   const [usingFallback, setUsingFallback] = useState(false);
+  const [mainTab, setMainTab] = useState("news");
 
   useEffect(() => {
     const t = setInterval(() => {
@@ -588,6 +734,25 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {/* Main tabs */}
+        <div style={{ display: "flex", gap: "0", borderBottom: "1px solid #1f2937", background: "#080a10" }}>
+          <button onClick={() => setMainTab("news")} style={{
+            background: mainTab === "news" ? "#0f1117" : "transparent",
+            color: mainTab === "news" ? "#34d399" : "#4b5563",
+            border: "none", borderBottom: mainTab === "news" ? "2px solid #34d399" : "2px solid transparent",
+            padding: "10px 24px", fontSize: "13px", fontFamily: "monospace", fontWeight: "700",
+            cursor: "pointer", transition: "all 0.2s",
+          }}>📡 ニュース</button>
+          <button onClick={() => setMainTab("transcript")} style={{
+            background: mainTab === "transcript" ? "#0f1117" : "transparent",
+            color: mainTab === "transcript" ? "#34d399" : "#4b5563",
+            border: "none", borderBottom: mainTab === "transcript" ? "2px solid #34d399" : "2px solid transparent",
+            padding: "10px 24px", fontSize: "13px", fontFamily: "monospace", fontWeight: "700",
+            cursor: "pointer", transition: "all 0.2s",
+          }}>🎬 YouTube字幕</button>
+        </div>
+
+        {mainTab === "news" && <>
         <Ticker news={news} />
 
         {/* Source badges */}
@@ -632,8 +797,12 @@ export default function Dashboard() {
           </div>
         )}
 
+        </>}
+
+        {mainTab === "transcript" && <YouTubeTranscriptPanel />}
+
         <div style={{ borderTop: "1px solid #111827", padding: "12px 24px", display: "flex", justifyContent: "space-between", color: "#1f2937", fontSize: "11px" }}>
-          <span>AI_RADAR v0.7</span>
+          <span>AI_RADAR v0.8</span>
           <span>YouTube × HackerNews × Claude AI</span>
         </div>
       </div>
