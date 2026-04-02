@@ -90,3 +90,4 @@ npm run dev
 
 Made with ❤️ by ととのえる屋
 // Vercel redeploy with Claude API key set 2026年 4月  2日 木曜日 14:58:32    
+// Updated 2026-04-02 15:18:54
