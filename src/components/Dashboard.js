@@ -27,6 +27,17 @@ const FALLBACK_NEWS = [
   { id: "f8", title: "OpenAI valuation hits $300B: What it means for the industry", titleJa: "OpenAIの評価額3000億ドル突破：業界への影響を解説", source: "CNBC", author: "CNBC", score: 98700, num_comments: 543, created_utc: Math.floor(Date.now()/1000)-14400, permalink: "https://www.youtube.com/results?search_query=OpenAI+valuation", category: "ビジネス" },
 ];
 
+function classifyCategory(title) {
+  const t = title.toLowerCase();
+  const toolWords = ["tool", "tutorial", "framework", "library", "sdk", "api", "app", "build", "code", "dev", "github", "open source", "rust", "python", "launch", "release", "docker", "cli", "plugin", "extension", "editor", "ide"];
+  const bizWords = ["business", "startup", "funding", "valuation", "billion", "million", "revenue", "company", "market", "invest", "ipo", "acquisition", "layoff", "hire", "ceo", "enterprise", "regulation", "policy", "law", "ban", "government", "gdpr", "copyright"];
+  const modelWords = ["gpt", "claude", "gemini", "llama", "mistral", "model", "llm", "chatgpt", "copilot", "benchmark", "parameter", "fine-tun", "training", "inference", "token", "transformer", "diffusion", "stable diffusion", "midjourney", "sora", "openai", "anthropic", "google ai", "meta ai"];
+  if (modelWords.some(w => t.includes(w))) return "モデル";
+  if (bizWords.some(w => t.includes(w))) return "ビジネス";
+  if (toolWords.some(w => t.includes(w))) return "ツール";
+  return "研究";
+}
+
 function timeLabel(utc) {
   const diff = Math.floor(Date.now() / 1000) - utc;
   if (diff < 60) return `${diff}秒前`;
@@ -172,10 +183,12 @@ function DetailPanel({ item, onClose }) {
   async function loadSummary(it) {
     setSummaryLoading(true);
     try {
+      const sourceLabel = it.sourceType === "hn" ? "Hacker News記事" : "YouTube動画";
+      const sourceField = it.sourceType === "hn" ? `投稿者: ${it.author}` : `チャンネル: ${it.source}`;
       const text = await callClaude([{ role: "user", content:
-        `以下のYouTube動画を分析してJSONのみ返してください（前置き不要）。
+        `以下の${sourceLabel}を分析してJSONのみ返してください（前置き不要）。
 タイトル: ${it.title}
-チャンネル: ${it.source}
+${sourceField}
 カテゴリ: ${it.category}
 
 {"titleJa":"日本語タイトル（40文字以内）","translation":"内容の日本語要約（120字以内）","points":["ポイント1（25字以内）","ポイント2（25字以内）","ポイント3（25字以内）"],"impact":"日本への影響（45字以内）","level":"初心者|中級者|上級者"}`
@@ -228,7 +241,11 @@ function DetailPanel({ item, onClose }) {
         <div style={{ overflowY: "auto", flex: 1, padding: "20px", display: "flex", flexDirection: "column", gap: "16px" }}>
           <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
             <span style={{ background: catColor+"22", color: catColor, border: `1px solid ${catColor}44`, borderRadius: "4px", padding: "2px 10px", fontSize: "11px", fontFamily: "monospace" }}>{item.category}</span>
-            <span style={{ color: "#ff0000", background: "#ff000015", border: "1px solid #ff000030", borderRadius: "4px", padding: "2px 8px", fontSize: "11px", fontFamily: "monospace" }}>▶ YouTube</span>
+            {item.sourceType === "hn" ? (
+              <span style={{ color: "#ff6600", background: "#ff660015", border: "1px solid #ff660030", borderRadius: "4px", padding: "2px 8px", fontSize: "11px", fontFamily: "monospace" }}>🟠 Hacker News</span>
+            ) : (
+              <span style={{ color: "#ff0000", background: "#ff000015", border: "1px solid #ff000030", borderRadius: "4px", padding: "2px 8px", fontSize: "11px", fontFamily: "monospace" }}>▶ YouTube</span>
+            )}
             {item.score > 100000 && <span style={{ color: "#f97316", fontSize: "11px", animation: "pulse 2s infinite" }}>🔥 人気動画</span>}
           </div>
 
@@ -236,15 +253,15 @@ function DetailPanel({ item, onClose }) {
 
           <div style={{ background: "#0a0f1a", border: "1px solid #1f2937", borderRadius: "8px", padding: "14px 16px", display: "flex", flexDirection: "column", gap: "9px" }}>
             <div style={{ color: "#374151", fontSize: "11px", fontFamily: "monospace" }}>── ソース情報</div>
-            <Row label="メディア" value="▶ YouTube" color="#ff0000" />
-            <Row label="チャンネル" value={item.source} color="#ff6666" />
-            <Row label="視聴回数" value={`▶ ${formatViews(item.score)}`} color="#f59e0b" />
+            <Row label="メディア" value={item.sourceType === "hn" ? "🟠 Hacker News" : "▶ YouTube"} color={item.sourceType === "hn" ? "#ff6600" : "#ff0000"} />
+            <Row label={item.sourceType === "hn" ? "投稿者" : "チャンネル"} value={item.source} color={item.sourceType === "hn" ? "#ff9944" : "#ff6666"} />
+            <Row label={item.sourceType === "hn" ? "ポイント" : "視聴回数"} value={item.sourceType === "hn" ? `⬆ ${item.score?.toLocaleString()}` : `▶ ${formatViews(item.score)}`} color="#f59e0b" />
             <Row label="コメント" value={`${item.num_comments?.toLocaleString()} 件`} color="#60a5fa" />
             <Row label="投稿時刻" value={timeLabel(item.created_utc)} color="#9ca3af" />
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <span style={{ color: "#6b7280", fontSize: "12px" }}>元動画</span>
-              <a href={item.permalink} target="_blank" rel="noopener noreferrer" style={{ color: "#ff6666", fontSize: "11px", fontFamily: "monospace", textDecoration: "none" }}>
-                YouTubeで開く →
+              <span style={{ color: "#6b7280", fontSize: "12px" }}>{item.sourceType === "hn" ? "元記事" : "元動画"}</span>
+              <a href={item.permalink} target="_blank" rel="noopener noreferrer" style={{ color: item.sourceType === "hn" ? "#ff9944" : "#ff6666", fontSize: "11px", fontFamily: "monospace", textDecoration: "none" }}>
+                {item.sourceType === "hn" ? "HNで開く →" : "YouTubeで開く →"}
               </a>
             </div>
           </div>
@@ -343,11 +360,15 @@ function NewsCard({ item, isNew, onClick }) {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
         <div style={{ display: "flex", gap: "6px" }}>
           <span style={{ background: catColor+"22", color: catColor, border: `1px solid ${catColor}44`, borderRadius: "4px", padding: "2px 8px", fontSize: "10px", fontFamily: "monospace" }}>{item.category}</span>
-          <span style={{ color: "#ff6666", background: "#ff000015", border: "1px solid #ff000030", borderRadius: "3px", padding: "2px 6px", fontSize: "10px", fontFamily: "monospace" }}>▶ YT</span>
+          {item.sourceType === "hn" ? (
+            <span style={{ color: "#ff6600", background: "#ff660015", border: "1px solid #ff660030", borderRadius: "3px", padding: "2px 6px", fontSize: "10px", fontFamily: "monospace" }}>🟠 HN</span>
+          ) : (
+            <span style={{ color: "#ff6666", background: "#ff000015", border: "1px solid #ff000030", borderRadius: "3px", padding: "2px 6px", fontSize: "10px", fontFamily: "monospace" }}>▶ YT</span>
+          )}
         </div>
         <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
           {item.score > 100000 && <span style={{ fontSize: "10px" }}>🔥</span>}
-          <span style={{ color: "#4b5563", fontSize: "10px", fontFamily: "monospace" }}>▶{formatViews(item.score)}</span>
+          <span style={{ color: "#4b5563", fontSize: "10px", fontFamily: "monospace" }}>{item.sourceType === "hn" ? `⬆${item.score}` : `▶${formatViews(item.score)}`}</span>
           <span style={{ color: "#374151", fontSize: "10px", fontFamily: "monospace" }}>{timeLabel(item.created_utc)}</span>
         </div>
       </div>
@@ -389,13 +410,17 @@ export default function Dashboard() {
   }, [tick === 0, nextUpdate === 300]);
 
   async function fetchAll() {
-    setStatus("YouTube取得中...");
-    const results = await fetchYouTube();
-    if (results.length > 0) {
+    setStatus("データ取得中...");
+    const [ytResults, hnResults] = await Promise.all([
+      fetchYouTube(),
+      fetchHackerNews(),
+    ]);
+    const allResults = [...ytResults, ...hnResults];
+    if (allResults.length > 0) {
       setUsingFallback(false);
       setStatus("AI翻訳中...");
-      const translated = await batchTranslate(results);
-      updateNews(translated);
+      const translated = await batchTranslate(allResults);
+      updateNews(translated.sort((a, b) => b.score - a.score));
     } else {
       setUsingFallback(true);
       setStatus("AI生成中...");
@@ -433,6 +458,7 @@ export default function Dashboard() {
             permalink: `https://www.youtube.com/watch?v=${v.id}`,
             category: yt.category,
             titleJa: null,
+            sourceType: "yt",
           });
         });
       } catch { /* skip */ }
@@ -447,11 +473,33 @@ export default function Dashboard() {
     return unique.sort((a, b) => b.score - a.score).slice(0, 12);
   }
 
+  async function fetchHackerNews() {
+    try {
+      const res = await fetch("/api/hackernews?limit=8");
+      const data = await res.json();
+      return (data?.items || []).map((item) => ({
+        id: `hn-${item.id}`,
+        title: item.title,
+        source: "Hacker News",
+        author: item.author,
+        score: item.score,
+        num_comments: item.commentCount,
+        created_utc: item.time,
+        permalink: item.url,
+        category: classifyCategory(item.title),
+        titleJa: null,
+        sourceType: "hn",
+      }));
+    } catch {
+      return [];
+    }
+  }
+
   async function batchTranslate(posts) {
     try {
       const lines = posts.map((p, i) => `${i}: ${p.title}`).join("\n");
       const text = await callClaude([{ role: "user", content:
-        `以下のYouTube動画タイトルを日本語に翻訳してください。JSONの配列のみ返してください（説明不要）:\n["翻訳0","翻訳1",...]\n各40文字以内。\n\n${lines}`
+        `以下のタイトルを日本語に翻訳してください。JSONの配列のみ返してください（説明不要）:\n["翻訳0","翻訳1",...]\n各40文字以内。\n\n${lines}`
       }], 600);
       const translations = JSON.parse(text);
       return posts.map((p, i) => ({ ...p, titleJa: translations[i] || null }));
@@ -484,7 +532,7 @@ export default function Dashboard() {
             <div>
               <div style={{ fontSize: "20px", fontWeight: "800", letterSpacing: "0.15em", color: "#f0fdf4" }}>▶ AI_RADAR</div>
               <div style={{ color: "#374151", fontSize: "11px", marginTop: "2px" }}>
-                YouTube × Claude AI — リアルタイム翻訳
+                YouTube × HackerNews × Claude AI — リアルタイム翻訳
                 {usingFallback && <span style={{ color: "#f59e0b", marginLeft: "8px" }}>[AI生成モード]</span>}
               </div>
             </div>
@@ -542,8 +590,8 @@ export default function Dashboard() {
         )}
 
         <div style={{ borderTop: "1px solid #111827", padding: "12px 24px", display: "flex", justifyContent: "space-between", color: "#1f2937", fontSize: "11px" }}>
-          <span>AI_RADAR v0.6</span>
-          <span>YouTube × Claude AI</span>
+          <span>AI_RADAR v0.7</span>
+          <span>YouTube × HackerNews × Claude AI</span>
         </div>
       </div>
       <DetailPanel item={selected} onClose={() => setSelected(null)} />
