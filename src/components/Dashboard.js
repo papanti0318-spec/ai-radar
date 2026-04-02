@@ -59,9 +59,16 @@ async function callClaude(messages, maxTokens = 1000) {
     body: JSON.stringify({ messages, max_tokens: maxTokens }),
   });
   const data = await res.json();
-  console.log("Claude API response:", data);
+  if (data.type === "error") {
+    const msg = data.error?.message || JSON.stringify(data);
+    console.error("Claude API error:", msg);
+    throw new Error(`Claude API error: ${msg}`);
+  }
   const text = (data.content?.[0]?.text || "").replace(/```json|```/g, "").trim();
-  console.log("Extracted text:", text);
+  if (!text) {
+    console.error("Claude API returned empty content:", data);
+    throw new Error("Claude API returned empty content");
+  }
   return text;
 }
 
@@ -196,8 +203,14 @@ ${sourceField}
 
 {"titleJa":"日本語タイトル（40文字以内）","translation":"内容の日本語要約（120字以内）","points":["ポイント1（25字以内）","ポイント2（25字以内）","ポイント3（25字以内）"],"impact":"日本への影響（45字以内）","level":"初心者|中級者|上級者"}`
       }]);
-      console.log("Claude response:", text);
-      setSummary(JSON.parse(text));
+      let parsed;
+      try {
+        parsed = JSON.parse(text);
+      } catch (parseErr) {
+        console.error("Summary JSON parse failed. Raw text:", text);
+        throw new Error(`JSON parse failed: ${parseErr.message}`);
+      }
+      setSummary(parsed);
     } catch (e) {
       console.error("Summary error:", e.message);
       setSummaryError(`翻訳に失敗しました: ${e.message}`);
@@ -212,13 +225,25 @@ ${sourceField}
       const text = await callClaude([{ role: "user", content:
         `以下のYouTube動画に対して、AI専門家・エンジニア・経営者など多様な視点からのリアルなコメントを5件生成してください。JSONのみ:\n[{"author":"名前","score":数値,"body":"英語コメント（50語以内）"}]\n\nタイトル: ${it.title}\nチャンネル: ${it.source}`
       }], 800);
-      const rawComments = JSON.parse(text);
+      let rawComments;
+      try {
+        rawComments = JSON.parse(text);
+      } catch (parseErr) {
+        console.error("Comments JSON parse failed. Raw text:", text);
+        throw new Error(`JSON parse failed: ${parseErr.message}`);
+      }
 
       const bodies = rawComments.map((c, i) => `${i}: ${c.body}`).join("\n");
       const transText = await callClaude([{ role: "user", content:
         `以下のコメントを日本語に翻訳してください。JSONの配列のみ返してください:\n["翻訳0","翻訳1",...]\n各60文字以内。\n\n${bodies}`
       }], 600);
-      const translations = JSON.parse(transText);
+      let translations;
+      try {
+        translations = JSON.parse(transText);
+      } catch (parseErr) {
+        console.error("Comment translation JSON parse failed. Raw text:", transText);
+        throw new Error(`JSON parse failed: ${parseErr.message}`);
+      }
       setComments(rawComments.map((c, i) => ({ ...c, bodyJa: translations[i] || c.body })));
     } catch {
       setCommentsError("コメントの取得に失敗しました。");
@@ -506,9 +531,13 @@ export default function Dashboard() {
       const text = await callClaude([{ role: "user", content:
         `以下のタイトルを日本語に翻訳してください。JSONの配列のみ返してください（説明不要）:\n["翻訳0","翻訳1",...]\n各40文字以内。\n\n${lines}`
       }], 600);
-      console.log("batchTranslate text to parse:", text);
-      const translations = JSON.parse(text);
-      console.log("Parsed translations:", translations);
+      let translations;
+      try {
+        translations = JSON.parse(text);
+      } catch (parseErr) {
+        console.error("batchTranslate JSON parse failed. Raw text:", text);
+        throw new Error(`JSON parse failed: ${parseErr.message}`);
+      }
       return posts.map((p, i) => ({ ...p, titleJa: translations[i] || null }));
     } catch (e) {
       console.error("batchTranslate error:", e);
@@ -521,8 +550,14 @@ export default function Dashboard() {
       const text = await callClaude([{ role: "user", content:
         `AI業界のリアルなYouTube動画風ニュースを8件生成してください。JSONのみ:\n[{"id":"g1","title":"英語タイトル","titleJa":"日本語（40字以内）","source":"チャンネル名","author":"チャンネル名","score":数値,"num_comments":数値,"created_utc":${Math.floor(Date.now()/1000)-3600},"permalink":"https://www.youtube.com/watch?v=dQw4w9WgXcQ","category":"研究|ツール|ビジネス|モデル"}]`
       }]);
-      return JSON.parse(text);
-    } catch {
+      try {
+        return JSON.parse(text);
+      } catch (parseErr) {
+        console.error("generateNews JSON parse failed. Raw text:", text);
+        throw parseErr;
+      }
+    } catch (e) {
+      console.error("generateNews error:", e.message);
       return FALLBACK_NEWS;
     }
   }
