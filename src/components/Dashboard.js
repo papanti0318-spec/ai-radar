@@ -417,7 +417,7 @@ function NewsCard({ item, isNew, onClick }) {
 }
 
 function YouTubeTranscriptPanel() {
-  const [url, setUrl] = useState("");
+  const [transcript, setTranscript] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [result, setResult] = useState(null);
@@ -425,22 +425,13 @@ function YouTubeTranscriptPanel() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-    if (!url.trim()) return;
+    if (!transcript.trim()) return;
     setLoading(true);
     setError(null);
     setResult(null);
     setShowFull(false);
     try {
-      const transcriptRes = await fetch("/api/youtube-transcript", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: url.trim() }),
-      });
-      const transcriptData = await transcriptRes.json();
-      if (transcriptData.error) throw new Error(transcriptData.error);
-
-      const fullText = transcriptData.transcript;
-      const truncated = fullText.length > 8000 ? fullText.slice(0, 8000) + "..." : fullText;
+      const truncated = transcript.trim().length > 8000 ? transcript.trim().slice(0, 8000) + "..." : transcript.trim();
 
       const text = await callClaude([{ role: "user", content:
         `以下のYouTube動画の字幕テキストを分析して、JSONのみ返してください（前置き不要）。
@@ -469,44 +460,60 @@ ${truncated}
 
   return (
     <div style={{ padding: "20px 24px 40px", maxWidth: "800px", margin: "0 auto" }}>
-      <div style={{ marginBottom: "20px" }}>
+      <div style={{ marginBottom: "16px" }}>
         <div style={{ color: "#34d399", fontSize: "14px", fontFamily: "monospace", marginBottom: "6px" }}>▶ YouTube字幕 → AI整形</div>
-        <div style={{ color: "#4b5563", fontSize: "11px", fontFamily: "monospace" }}>YouTube動画のURLを入力すると、字幕を取得してClaudeが日本語で整形します</div>
+        <div style={{ color: "#4b5563", fontSize: "11px", fontFamily: "monospace", lineHeight: "1.8" }}>YouTubeの字幕テキストを貼り付けると、Claudeが日本語で整形します</div>
       </div>
 
-      <form onSubmit={handleSubmit} style={{ display: "flex", gap: "8px", marginBottom: "20px" }}>
-        <input
-          type="text"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          placeholder="https://www.youtube.com/watch?v=..."
+      {/* 使い方ガイド */}
+      <div style={{ background: "#0a1a2a", border: "1px solid #1e3a5f", borderRadius: "8px", padding: "14px 16px", marginBottom: "16px" }}>
+        <div style={{ color: "#60a5fa", fontSize: "11px", fontFamily: "monospace", marginBottom: "8px" }}>📋 字幕のコピー方法</div>
+        <div style={{ color: "#4b5563", fontSize: "11px", fontFamily: "monospace", lineHeight: "2.0" }}>
+          1. YouTube動画を開く<br/>
+          2. 動画の下の「...」→「文字起こしを表示」をクリック<br/>
+          3. 表示された字幕テキストを全選択（Ctrl+A）してコピー<br/>
+          4. 下のテキストエリアに貼り付けて「AIで整形」ボタンを押す
+        </div>
+      </div>
+
+      <form onSubmit={handleSubmit} style={{ marginBottom: "20px" }}>
+        <textarea
+          value={transcript}
+          onChange={(e) => setTranscript(e.target.value)}
+          placeholder="ここにYouTubeの字幕テキストを貼り付けてください..."
+          rows={8}
           style={{
-            flex: 1, background: "#0f1117", border: "1px solid #1f2937", borderRadius: "6px",
-            padding: "10px 14px", color: "#e2e8f0", fontSize: "13px", fontFamily: "monospace",
-            outline: "none",
+            width: "100%", background: "#0f1117", border: "1px solid #1f2937", borderRadius: "6px",
+            padding: "12px 14px", color: "#e2e8f0", fontSize: "12px", fontFamily: "monospace",
+            outline: "none", resize: "vertical", lineHeight: "1.8",
           }}
           onFocus={(e) => e.target.style.borderColor = "#3b82f6"}
           onBlur={(e) => e.target.style.borderColor = "#1f2937"}
         />
-        <button
-          type="submit"
-          disabled={loading || !url.trim()}
-          style={{
-            background: loading ? "#1e3a5f" : "#34d399", color: loading ? "#60a5fa" : "#000",
-            border: "none", borderRadius: "6px", padding: "10px 20px",
-            fontSize: "12px", fontFamily: "monospace", fontWeight: "700",
-            cursor: loading ? "not-allowed" : "pointer", whiteSpace: "nowrap",
-            opacity: !url.trim() ? 0.5 : 1, transition: "all 0.2s",
-          }}
-        >
-          {loading ? "取得中..." : "字幕を取得"}
-        </button>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "8px" }}>
+          <span style={{ color: "#374151", fontSize: "10px", fontFamily: "monospace" }}>
+            {transcript.length > 0 ? `${transcript.length.toLocaleString()} 文字` : ""}
+          </span>
+          <button
+            type="submit"
+            disabled={loading || !transcript.trim()}
+            style={{
+              background: loading ? "#1e3a5f" : "#34d399", color: loading ? "#60a5fa" : "#000",
+              border: "none", borderRadius: "6px", padding: "10px 24px",
+              fontSize: "12px", fontFamily: "monospace", fontWeight: "700",
+              cursor: loading ? "not-allowed" : "pointer",
+              opacity: !transcript.trim() ? 0.5 : 1, transition: "all 0.2s",
+            }}
+          >
+            {loading ? "AI整形中..." : "AIで整形"}
+          </button>
+        </div>
       </form>
 
       {loading && (
         <div style={{ background: "linear-gradient(135deg,#0a1628,#0d1f2d)", border: "1px solid #1e3a5f", borderRadius: "8px", padding: "20px" }}>
           <Shimmer lines={5} />
-          <div style={{ color: "#4b5563", fontSize: "11px", fontFamily: "monospace", marginTop: "12px", textAlign: "center" }}>字幕を取得してAIが整形中...</div>
+          <div style={{ color: "#4b5563", fontSize: "11px", fontFamily: "monospace", marginTop: "12px", textAlign: "center" }}>Claudeが字幕を整形中...</div>
         </div>
       )}
 
