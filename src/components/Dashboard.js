@@ -59,7 +59,10 @@ async function callClaude(messages, maxTokens = 1000) {
     body: JSON.stringify({ messages, max_tokens: maxTokens }),
   });
   const data = await res.json();
-  return (data.content?.[0]?.text || "").replace(/```json|```/g, "").trim();
+  console.log("Claude API response:", data);
+  const text = (data.content?.[0]?.text || "").replace(/```json|```/g, "").trim();
+  console.log("Extracted text:", text);
+  return text;
 }
 
 function Ticker({ news }) {
@@ -193,9 +196,11 @@ ${sourceField}
 
 {"titleJa":"日本語タイトル（40文字以内）","translation":"内容の日本語要約（120字以内）","points":["ポイント1（25字以内）","ポイント2（25字以内）","ポイント3（25字以内）"],"impact":"日本への影響（45字以内）","level":"初心者|中級者|上級者"}`
       }]);
+      console.log("Claude response:", text);
       setSummary(JSON.parse(text));
-    } catch {
-      setSummaryError("翻訳に失敗しました。");
+    } catch (e) {
+      console.error("Summary error:", e.message);
+      setSummaryError(`翻訳に失敗しました: ${e.message}`);
     }
     setSummaryLoading(false);
   }
@@ -501,9 +506,12 @@ export default function Dashboard() {
       const text = await callClaude([{ role: "user", content:
         `以下のタイトルを日本語に翻訳してください。JSONの配列のみ返してください（説明不要）:\n["翻訳0","翻訳1",...]\n各40文字以内。\n\n${lines}`
       }], 600);
+      console.log("batchTranslate text to parse:", text);
       const translations = JSON.parse(text);
+      console.log("Parsed translations:", translations);
       return posts.map((p, i) => ({ ...p, titleJa: translations[i] || null }));
-    } catch {
+    } catch (e) {
+      console.error("batchTranslate error:", e);
       return posts;
     }
   }
