@@ -467,12 +467,10 @@ ${truncated}
 
       {/* 使い方ガイド */}
       <div style={{ background: "#0a1a2a", border: "1px solid #1e3a5f", borderRadius: "8px", padding: "14px 16px", marginBottom: "16px" }}>
-        <div style={{ color: "#60a5fa", fontSize: "11px", fontFamily: "monospace", marginBottom: "8px" }}>📋 字幕のコピー方法</div>
+        <div style={{ color: "#60a5fa", fontSize: "11px", fontFamily: "monospace", marginBottom: "8px" }}>📋 使い方</div>
         <div style={{ color: "#4b5563", fontSize: "11px", fontFamily: "monospace", lineHeight: "2.0" }}>
-          1. YouTube動画を開く<br/>
-          2. 動画の下の「...」→「文字起こしを表示」をクリック<br/>
-          3. 表示された字幕テキストを全選択（Ctrl+A）してコピー<br/>
-          4. 下のテキストエリアに貼り付けて「AIで整形」ボタンを押す
+          YouTube動画や記事の内容テキストを下に貼り付けて「AIで整形」を押すと、<br/>
+          Claudeが ①3行まとめ ②詳細記事 ③整形全文 に変換します
         </div>
       </div>
 
@@ -480,7 +478,7 @@ ${truncated}
         <textarea
           value={transcript}
           onChange={(e) => setTranscript(e.target.value)}
-          placeholder="ここにYouTubeの字幕テキストを貼り付けてください..."
+          placeholder="ここにYouTube動画や記事のテキストを貼り付けてください..."
           rows={8}
           style={{
             width: "100%", background: "#0f1117", border: "1px solid #1f2937", borderRadius: "6px",
