@@ -8,7 +8,7 @@ Next.js製のAIニュースダッシュボード。
 - Claude API翻訳：`src/app/api/claude/route.js`
 - YouTube API：`src/app/api/youtube/route.js`
 - HackerNews API：`src/app/api/hackernews/route.js`
-- Vercel公開済み：https://ai-radar-eight.vercel.app
+- Vercel公開済み：https://ai-radar-git-main-papanti0318-specs-projects.vercel.app
 - GitHub：papanti0318-spec/ai-radar
 
 ## 現在の状況
