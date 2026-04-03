@@ -29,7 +29,16 @@
       "Bash(npm view:*)",
       "WebFetch(domain:supadata.ai)",
       "WebFetch(domain:docs.supadata.ai)",
-      "Bash(curl -s http://localhost:3000/api/youtube-transcript -X POST -H \"Content-Type: application/json\" -d '{\"url\":\"https://www.youtube.com/watch?v=dQw4w9WgXcQ\"}')"
+      "Bash(curl -s http://localhost:3000/api/youtube-transcript -X POST -H \"Content-Type: application/json\" -d '{\"url\":\"https://www.youtube.com/watch?v=dQw4w9WgXcQ\"}')",
+      "Bash(curl -s \"https://note.com/hashtag/AI/feed\")",
+      "Bash(curl -s \"https://note.com/topic/ai/feed\")",
+      "Bash(npm run:*)",
+      "Bash(curl -s http://localhost:3000/api/note-articles?limit=3)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d,ensure_ascii=False,indent=2\\)[:2000]\\)\")",
+      "Bash(taskkill //f //im node.exe)",
+      "Bash(rm -rf .next)",
+      "Bash(curl -s \"http://localhost:3100/api/note-articles?limit=3\")",
+      "Bash(curl -s \"http://localhost:3100/api/hackernews?limit=3\")"
     ]
   }
 }
