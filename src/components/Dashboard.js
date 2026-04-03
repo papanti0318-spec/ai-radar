@@ -13,18 +13,24 @@ const YT_QUERIES = [
 ];
 
 const CATEGORY_COLORS = {
-  研究: "#818cf8", ツール: "#34d399", ビジネス: "#f59e0b", モデル: "#f472b6",
+  研究: "#6366f1", ツール: "#10b981", ビジネス: "#f59e0b", モデル: "#ec4899",
+};
+
+const SOURCE_BADGE = {
+  hn: { label: "Hacker News", icon: "🟠", color: "#ff6600", bg: "#fff3e0" },
+  yt: { label: "YouTube", icon: "▶", color: "#ff0000", bg: "#ffebee" },
+  note: { label: "note", icon: "📝", color: "#41c9b4", bg: "#e0f7f1" },
 };
 
 const FALLBACK_NEWS = [
-  { id: "f1", title: "GPT-4o gets major update with better reasoning", titleJa: "GPT-4oが推論能力を大幅強化", source: "OpenAI Official", author: "OpenAI Official", score: 342000, num_comments: 287, created_utc: Math.floor(Date.now()/1000)-1800, permalink: "https://www.youtube.com/results?search_query=GPT-4o", category: "モデル" },
-  { id: "f2", title: "Llama 3.3 running locally is absolutely insane performance", titleJa: "Llama 3.3のローカル動作が衝撃的な性能", source: "Two Minute Papers", author: "Two Minute Papers", score: 289000, num_comments: 412, created_utc: Math.floor(Date.now()/1000)-3200, permalink: "https://www.youtube.com/results?search_query=Llama+local", category: "ツール" },
-  { id: "f3", title: "New paper: LLMs autonomously write and verify mathematical proofs", titleJa: "新論文：LLMが数学的証明を自律的に生成・検証", source: "Yannic Kilcher", author: "Yannic Kilcher", score: 210400, num_comments: 183, created_utc: Math.floor(Date.now()/1000)-5400, permalink: "https://www.youtube.com/results?search_query=LLM+math+proof", category: "研究" },
-  { id: "f4", title: "Claude 3.5 Sonnet vs GPT-4o: Full Benchmark Comparison", titleJa: "Claude 3.5 Sonnet vs GPT-4o 完全ベンチマーク比較", source: "AI Explained", author: "AI Explained", score: 187600, num_comments: 234, created_utc: Math.floor(Date.now()/1000)-7200, permalink: "https://www.youtube.com/results?search_query=Claude+GPT+benchmark", category: "モデル" },
-  { id: "f5", title: "AI replacing jobs: 40% of tasks automatable by 2026", titleJa: "AI自動化で40%の業務が代替可能との新研究", source: "Bloomberg Technology", author: "Bloomberg Technology", score: 165400, num_comments: 891, created_utc: Math.floor(Date.now()/1000)-9000, permalink: "https://www.youtube.com/results?search_query=AI+jobs+automation", category: "ビジネス" },
-  { id: "f6", title: "Build AI Agent from Scratch: Complete Tutorial 2025", titleJa: "AIエージェントをゼロから構築：完全チュートリアル2025", source: "freeCodeCamp", author: "freeCodeCamp", score: 143200, num_comments: 167, created_utc: Math.floor(Date.now()/1000)-10800, permalink: "https://www.youtube.com/results?search_query=AI+agent+tutorial", category: "ツール" },
-  { id: "f7", title: "Anthropic releases new AI safety research: Constitutional AI v2", titleJa: "AnthropicがConstitutional AI v2安全性研究を公開", source: "Lex Fridman", author: "Lex Fridman", score: 128700, num_comments: 145, created_utc: Math.floor(Date.now()/1000)-12600, permalink: "https://www.youtube.com/results?search_query=Anthropic+AI+safety", category: "研究" },
-  { id: "f8", title: "OpenAI valuation hits $300B: What it means for the industry", titleJa: "OpenAIの評価額3000億ドル突破：業界への影響を解説", source: "CNBC", author: "CNBC", score: 98700, num_comments: 543, created_utc: Math.floor(Date.now()/1000)-14400, permalink: "https://www.youtube.com/results?search_query=OpenAI+valuation", category: "ビジネス" },
+  { id: "f1", title: "GPT-4o gets major update with better reasoning", titleJa: "GPT-4oが推論能力を大幅強化", source: "OpenAI Official", author: "OpenAI Official", score: 342000, num_comments: 287, created_utc: Math.floor(Date.now()/1000)-1800, permalink: "https://www.youtube.com/results?search_query=GPT-4o", category: "モデル", sourceType: "yt" },
+  { id: "f2", title: "Llama 3.3 running locally is absolutely insane performance", titleJa: "Llama 3.3のローカル動作が衝撃的な性能", source: "Two Minute Papers", author: "Two Minute Papers", score: 289000, num_comments: 412, created_utc: Math.floor(Date.now()/1000)-3200, permalink: "https://www.youtube.com/results?search_query=Llama+local", category: "ツール", sourceType: "yt" },
+  { id: "f3", title: "New paper: LLMs autonomously write and verify mathematical proofs", titleJa: "新論文：LLMが数学的証明を自律的に生成・検証", source: "Yannic Kilcher", author: "Yannic Kilcher", score: 210400, num_comments: 183, created_utc: Math.floor(Date.now()/1000)-5400, permalink: "https://www.youtube.com/results?search_query=LLM+math+proof", category: "研究", sourceType: "yt" },
+  { id: "f4", title: "Claude 3.5 Sonnet vs GPT-4o: Full Benchmark Comparison", titleJa: "Claude 3.5 Sonnet vs GPT-4o 完全ベンチマーク比較", source: "AI Explained", author: "AI Explained", score: 187600, num_comments: 234, created_utc: Math.floor(Date.now()/1000)-7200, permalink: "https://www.youtube.com/results?search_query=Claude+GPT+benchmark", category: "モデル", sourceType: "yt" },
+  { id: "f5", title: "AI replacing jobs: 40% of tasks automatable by 2026", titleJa: "AI自動化で40%の業務が代替可能との新研究", source: "Bloomberg Technology", author: "Bloomberg Technology", score: 165400, num_comments: 891, created_utc: Math.floor(Date.now()/1000)-9000, permalink: "https://www.youtube.com/results?search_query=AI+jobs+automation", category: "ビジネス", sourceType: "yt" },
+  { id: "f6", title: "Build AI Agent from Scratch: Complete Tutorial 2025", titleJa: "AIエージェントをゼロから構築：完全チュートリアル2025", source: "freeCodeCamp", author: "freeCodeCamp", score: 143200, num_comments: 167, created_utc: Math.floor(Date.now()/1000)-10800, permalink: "https://www.youtube.com/results?search_query=AI+agent+tutorial", category: "ツール", sourceType: "yt" },
+  { id: "f7", title: "Anthropic releases new AI safety research: Constitutional AI v2", titleJa: "AnthropicがConstitutional AI v2安全性研究を公開", source: "Lex Fridman", author: "Lex Fridman", score: 128700, num_comments: 145, created_utc: Math.floor(Date.now()/1000)-12600, permalink: "https://www.youtube.com/results?search_query=Anthropic+AI+safety", category: "研究", sourceType: "yt" },
+  { id: "f8", title: "OpenAI valuation hits $300B: What it means for the industry", titleJa: "OpenAIの評価額3000億ドル突破：業界への影響を解説", source: "CNBC", author: "CNBC", score: 98700, num_comments: 543, created_utc: Math.floor(Date.now()/1000)-14400, permalink: "https://www.youtube.com/results?search_query=OpenAI+valuation", category: "ビジネス", sourceType: "yt" },
 ];
 
 function classifyCategory(title) {
@@ -72,37 +78,16 @@ async function callClaude(messages, maxTokens = 1000) {
   return text;
 }
 
-function Ticker({ news }) {
-  if (!news.length) return null;
-  const items = news.map(n => n.titleJa || n.title).join("　／／　");
-  return (
-    <div style={{ background: "#0a0a0a", borderBottom: "1px solid #1f2937", padding: "7px 0", overflow: "hidden" }}>
-      <div style={{ display: "flex", whiteSpace: "nowrap", animation: "ticker 60s linear infinite", color: "#6ee7b7", fontFamily: "monospace", fontSize: "12px" }}>
-        <span style={{ paddingRight: "60px" }}>🔴 LIVE　　{items}</span>
-        <span style={{ paddingRight: "60px" }}>🔴 LIVE　　{items}</span>
-      </div>
-      <style>{`
-        @keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-        @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
-        @keyframes fadeSlideIn{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:translateY(0)}}
-        @keyframes slideInRight{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
-        @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
-        *{box-sizing:border-box;}
-        a{color:inherit;}
-        details summary::-webkit-details-marker{display:none;}
-      `}</style>
-    </div>
-  );
-}
 
+/* ─── Shimmer ─── */
 function Shimmer({ lines = 3 }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
       {Array.from({ length: lines }).map((_, i) => (
         <div key={i} style={{
-          height: "12px", borderRadius: "4px",
-          width: `${[100, 80, 60][i] || 70}%`,
-          background: "linear-gradient(90deg,#1e3a5f,#2d5a8e,#1e3a5f)",
+          height: "14px", borderRadius: "6px",
+          width: `${[100, 85, 65][i] || 70}%`,
+          background: "linear-gradient(90deg,#efe8dc,#f5f0e8,#efe8dc)",
           backgroundSize: "200% 100%", animation: "shimmer 1.5s infinite",
         }} />
       ))}
@@ -110,62 +95,30 @@ function Shimmer({ lines = 3 }) {
   );
 }
 
-function Row({ label, value, color }) {
+/* ─── Source Badge ─── */
+function SourceBadge({ type }) {
+  const s = SOURCE_BADGE[type] || SOURCE_BADGE.yt;
   return (
-    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-      <span style={{ color: "#6b7280", fontSize: "12px" }}>{label}</span>
-      <span style={{ color: color || "#9ca3af", fontSize: "12px", fontFamily: "monospace" }}>{value}</span>
-    </div>
+    <span style={{
+      display: "inline-flex", alignItems: "center", gap: "4px",
+      background: s.bg, color: s.color, fontSize: "11px", fontWeight: "600",
+      padding: "2px 8px", borderRadius: "4px", whiteSpace: "nowrap",
+    }}>{s.icon} {s.label}</span>
   );
 }
 
-function Tab({ label, active, onClick, badge }) {
+/* ─── Category Pill ─── */
+function CategoryPill({ category }) {
+  const c = CATEGORY_COLORS[category] || "#888";
   return (
-    <button onClick={onClick} style={{
-      background: active ? "#1e3a5f" : "transparent",
-      color: active ? "#60a5fa" : "#4b5563",
-      border: `1px solid ${active ? "#3b82f6" : "#1f2937"}`,
-      borderRadius: "6px", padding: "6px 16px", fontSize: "12px",
-      cursor: "pointer", fontFamily: "monospace", transition: "all 0.2s",
-      display: "flex", alignItems: "center", gap: "6px",
-    }}>
-      {label}
-      {badge && (
-        <span style={{ background: active ? "#3b82f6" : "#374151", color: active ? "#fff" : "#6b7280", borderRadius: "10px", padding: "1px 6px", fontSize: "10px" }}>
-          {badge}
-        </span>
-      )}
-    </button>
+    <span style={{
+      background: c + "14", color: c, fontSize: "11px", fontWeight: "600",
+      padding: "2px 10px", borderRadius: "4px", border: `1px solid ${c}30`,
+    }}>{category}</span>
   );
 }
 
-function CommentCard({ comment, index }) {
-  return (
-    <div style={{
-      background: "#080c14",
-      border: "1px solid #1a2332",
-      borderLeft: `3px solid ${["#818cf8","#34d399","#f59e0b","#f472b6","#60a5fa"][index % 5]}`,
-      borderRadius: "6px", padding: "12px 14px", marginBottom: "10px",
-    }}>
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
-        <span style={{ color: "#4b5563", fontSize: "11px", fontFamily: "monospace" }}>{comment.author}</span>
-        <span style={{ color: "#f59e0b", fontSize: "11px", fontFamily: "monospace" }}>👍 {comment.score?.toLocaleString()}</span>
-      </div>
-      {comment.bodyJa && (
-        <div style={{ color: "#bfdbfe", fontSize: "12px", lineHeight: "1.8", fontFamily: "monospace", marginBottom: "8px" }}>
-          {comment.bodyJa}
-        </div>
-      )}
-      <details>
-        <summary style={{ color: "#374151", fontSize: "10px", fontFamily: "monospace", cursor: "pointer" }}>▶ 原文（英語）</summary>
-        <div style={{ color: "#4b5563", fontSize: "11px", lineHeight: "1.7", fontFamily: "monospace", marginTop: "6px", paddingTop: "6px", borderTop: "1px solid #1a2332" }}>
-          {comment.body}
-        </div>
-      </details>
-    </div>
-  );
-}
-
+/* ─── Detail Panel (slide-in) ─── */
 function DetailPanel({ item, onClose }) {
   const [tab, setTab] = useState("summary");
   const [summary, setSummary] = useState(null);
@@ -176,18 +129,11 @@ function DetailPanel({ item, onClose }) {
   const [commentsError, setCommentsError] = useState(null);
 
   useEffect(() => {
-    if (item) {
-      setSummary(null); setSummaryError(null);
-      setComments([]); setCommentsError(null);
-      setTab("summary");
-      loadSummary(item);
-    }
+    if (item) { setSummary(null); setSummaryError(null); setComments([]); setCommentsError(null); setTab("summary"); loadSummary(item); }
   }, [item?.id]);
 
   useEffect(() => {
-    if (tab === "comments" && comments.length === 0 && !commentsLoading && item) {
-      loadComments(item);
-    }
+    if (tab === "comments" && comments.length === 0 && !commentsLoading && item) loadComments(item);
   }, [tab]);
 
   async function loadSummary(it) {
@@ -196,147 +142,133 @@ function DetailPanel({ item, onClose }) {
       const sourceLabel = it.sourceType === "hn" ? "Hacker News記事" : "YouTube動画";
       const sourceField = it.sourceType === "hn" ? `投稿者: ${it.author}` : `チャンネル: ${it.source}`;
       const text = await callClaude([{ role: "user", content:
-        `以下の${sourceLabel}を分析してJSONのみ返してください（前置き不要）。
-タイトル: ${it.title}
-${sourceField}
-カテゴリ: ${it.category}
-
-{"titleJa":"日本語タイトル（40文字以内）","translation":"内容の日本語要約（120字以内）","points":["ポイント1（25字以内）","ポイント2（25字以内）","ポイント3（25字以内）"],"impact":"日本への影響（45字以内）","level":"初心者|中級者|上級者"}`
+        `以下の${sourceLabel}を分析してJSONのみ返してください（前置き不要）。\nタイトル: ${it.title}\n${sourceField}\nカテゴリ: ${it.category}\n\n{"titleJa":"日本語タイトル（40文字以内）","translation":"内容の日本語要約（120字以内）","points":["ポイント1（25字以内）","ポイント2（25字以内）","ポイント3（25字以内）"],"impact":"日本への影響（45字以内）","level":"初心者|中級者|上級者"}`
       }]);
       let parsed;
-      try {
-        parsed = JSON.parse(text);
-      } catch (parseErr) {
-        console.error("Summary JSON parse failed. Raw text:", text);
-        throw new Error(`JSON parse failed: ${parseErr.message}`);
-      }
+      try { parsed = JSON.parse(text); } catch (parseErr) { console.error("Summary JSON parse failed:", text); throw new Error(`JSON parse failed: ${parseErr.message}`); }
       setSummary(parsed);
-    } catch (e) {
-      console.error("Summary error:", e.message);
-      setSummaryError(`翻訳に失敗しました: ${e.message}`);
-    }
+    } catch (e) { console.error("Summary error:", e.message); setSummaryError(`翻訳に失敗しました: ${e.message}`); }
     setSummaryLoading(false);
   }
 
   async function loadComments(it) {
-    setCommentsLoading(true);
-    setCommentsError(null);
+    setCommentsLoading(true); setCommentsError(null);
     try {
       const text = await callClaude([{ role: "user", content:
         `以下のYouTube動画に対して、AI専門家・エンジニア・経営者など多様な視点からのリアルなコメントを5件生成してください。JSONのみ:\n[{"author":"名前","score":数値,"body":"英語コメント（50語以内）"}]\n\nタイトル: ${it.title}\nチャンネル: ${it.source}`
       }], 800);
       let rawComments;
-      try {
-        rawComments = JSON.parse(text);
-      } catch (parseErr) {
-        console.error("Comments JSON parse failed. Raw text:", text);
-        throw new Error(`JSON parse failed: ${parseErr.message}`);
-      }
-
+      try { rawComments = JSON.parse(text); } catch (parseErr) { console.error("Comments JSON parse failed:", text); throw new Error(`JSON parse failed: ${parseErr.message}`); }
       const bodies = rawComments.map((c, i) => `${i}: ${c.body}`).join("\n");
       const transText = await callClaude([{ role: "user", content:
         `以下のコメントを日本語に翻訳してください。JSONの配列のみ返してください:\n["翻訳0","翻訳1",...]\n各60文字以内。\n\n${bodies}`
       }], 600);
       let translations;
-      try {
-        translations = JSON.parse(transText);
-      } catch (parseErr) {
-        console.error("Comment translation JSON parse failed. Raw text:", transText);
-        throw new Error(`JSON parse failed: ${parseErr.message}`);
-      }
+      try { translations = JSON.parse(transText); } catch (parseErr) { console.error("Comment translation JSON parse failed:", transText); throw new Error(`JSON parse failed: ${parseErr.message}`); }
       setComments(rawComments.map((c, i) => ({ ...c, bodyJa: translations[i] || c.body })));
-    } catch {
-      setCommentsError("コメントの取得に失敗しました。");
-    }
+    } catch { setCommentsError("コメントの取得に失敗しました。"); }
     setCommentsLoading(false);
   }
 
   if (!item) return null;
-  const catColor = CATEGORY_COLORS[item.category] || "#9ca3af";
-  const levelColor = { 初心者: "#34d399", 中級者: "#f59e0b", 上級者: "#f472b6" };
+  const catColor = CATEGORY_COLORS[item.category] || "#888";
+  const levelColor = { 初心者: "#10b981", 中級者: "#f59e0b", 上級者: "#ec4899" };
 
   return (
     <div style={{ position: "fixed", inset: 0, zIndex: 100, display: "flex", justifyContent: "flex-end", pointerEvents: "none" }}>
-      <div onClick={onClose} style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.65)", backdropFilter: "blur(3px)", pointerEvents: "all" }} />
+      <div onClick={onClose} style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.3)", backdropFilter: "blur(4px)", pointerEvents: "all" }} />
       <div style={{
-        position: "relative", zIndex: 1, width: "min(520px, 95vw)", height: "100vh",
-        background: "linear-gradient(160deg,#0d1117,#0f1923)", borderLeft: "1px solid #1f2937",
+        position: "relative", zIndex: 1, width: "min(560px, 95vw)", height: "100vh",
+        background: "#FFFFFF", borderLeft: "1px solid #e8e0d4",
         display: "flex", flexDirection: "column", animation: "slideInRight 0.3s ease", pointerEvents: "all",
+        boxShadow: "-8px 0 30px rgba(0,0,0,0.08)",
       }}>
-        <div style={{ padding: "18px 20px 14px", borderBottom: "1px solid #1f2937", background: "rgba(13,17,23,0.95)", flexShrink: 0, backdropFilter: "blur(10px)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <span style={{ color: "#34d399", fontSize: "12px", fontFamily: "monospace" }}>▶ 詳細 + AI翻訳</span>
-          <button onClick={onClose} style={{ background: "transparent", border: "1px solid #374151", color: "#9ca3af", width: "28px", height: "28px", borderRadius: "4px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "14px" }}>✕</button>
+        {/* Panel header */}
+        <div style={{ padding: "20px 24px 16px", borderBottom: "1px solid #f0ebe3", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <span style={{ color: "#10b981", fontSize: "14px", fontWeight: "700" }}>詳細 + AI翻訳</span>
+          <button onClick={onClose} style={{ background: "#f5f0e6", border: "1px solid #e8e0d4", color: "#888", width: "32px", height: "32px", borderRadius: "8px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "16px" }}>✕</button>
         </div>
 
-        <div style={{ overflowY: "auto", flex: 1, padding: "20px", display: "flex", flexDirection: "column", gap: "16px" }}>
+        <div style={{ overflowY: "auto", flex: 1, padding: "24px", display: "flex", flexDirection: "column", gap: "20px" }}>
+          {/* Badges */}
           <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-            <span style={{ background: catColor+"22", color: catColor, border: `1px solid ${catColor}44`, borderRadius: "4px", padding: "2px 10px", fontSize: "11px", fontFamily: "monospace" }}>{item.category}</span>
-            {item.sourceType === "hn" ? (
-              <span style={{ color: "#ff6600", background: "#ff660015", border: "1px solid #ff660030", borderRadius: "4px", padding: "2px 8px", fontSize: "11px", fontFamily: "monospace" }}>🟠 Hacker News</span>
-            ) : item.sourceType === "note" ? (
-              <span style={{ color: "#41c9b4", background: "#41c9b415", border: "1px solid #41c9b430", borderRadius: "4px", padding: "2px 8px", fontSize: "11px", fontFamily: "monospace" }}>📝 note</span>
-            ) : (
-              <span style={{ color: "#ff0000", background: "#ff000015", border: "1px solid #ff000030", borderRadius: "4px", padding: "2px 8px", fontSize: "11px", fontFamily: "monospace" }}>▶ YouTube</span>
-            )}
-            {item.score > 100000 && <span style={{ color: "#f97316", fontSize: "11px", animation: "pulse 2s infinite" }}>🔥 人気</span>}
+            <CategoryPill category={item.category} />
+            <SourceBadge type={item.sourceType} />
+            {item.score > 100000 && <span style={{ color: "#f97316", fontSize: "12px", fontWeight: "600" }}>🔥 人気</span>}
           </div>
 
-          <div style={{ color: "#f1f5f9", fontSize: "15px", fontWeight: "700", lineHeight: "1.5", fontFamily: "monospace" }}>{item.title}</div>
+          {/* Title */}
+          <h2 style={{ color: "#1A1A1A", fontSize: "18px", fontWeight: "700", lineHeight: "1.6" }}>{item.title}</h2>
 
-          <div style={{ background: "#0a0f1a", border: "1px solid #1f2937", borderRadius: "8px", padding: "14px 16px", display: "flex", flexDirection: "column", gap: "9px" }}>
-            <div style={{ color: "#374151", fontSize: "11px", fontFamily: "monospace" }}>── ソース情報</div>
-            <Row label="メディア" value={item.sourceType === "hn" ? "🟠 Hacker News" : item.sourceType === "note" ? "📝 note" : "▶ YouTube"} color={item.sourceType === "hn" ? "#ff6600" : item.sourceType === "note" ? "#41c9b4" : "#ff0000"} />
-            <Row label={item.sourceType === "hn" ? "投稿者" : item.sourceType === "note" ? "著者" : "チャンネル"} value={item.source} color={item.sourceType === "hn" ? "#ff9944" : item.sourceType === "note" ? "#41c9b4" : "#ff6666"} />
-            <Row label={item.sourceType === "hn" ? "ポイント" : item.sourceType === "note" ? "スキ" : "視聴回数"} value={item.sourceType === "hn" ? `⬆ ${item.score?.toLocaleString()}` : item.sourceType === "note" ? `♡ ${item.score?.toLocaleString()}` : `▶ ${formatViews(item.score)}`} color="#f59e0b" />
-            <Row label="コメント" value={`${item.num_comments?.toLocaleString()} 件`} color="#60a5fa" />
-            <Row label="投稿時刻" value={timeLabel(item.created_utc)} color="#9ca3af" />
+          {/* Info card */}
+          <div style={{ background: "#f5f0e6", borderRadius: "12px", padding: "16px 20px", display: "flex", flexDirection: "column", gap: "10px" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <span style={{ color: "#6b7280", fontSize: "12px" }}>{item.sourceType === "hn" ? "元記事" : item.sourceType === "note" ? "元記事" : "元動画"}</span>
-              <a href={item.permalink} target="_blank" rel="noopener noreferrer" style={{ color: item.sourceType === "hn" ? "#ff9944" : item.sourceType === "note" ? "#41c9b4" : "#ff6666", fontSize: "11px", fontFamily: "monospace", textDecoration: "none" }}>
-                {item.sourceType === "hn" ? "HNで開く →" : item.sourceType === "note" ? "noteで開く →" : "YouTubeで開く →"}
-              </a>
+              <span style={{ color: "#888", fontSize: "13px" }}>ソース</span>
+              <span style={{ color: "#1A1A1A", fontSize: "13px", fontWeight: "500" }}>{item.source}</span>
             </div>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <span style={{ color: "#888", fontSize: "13px" }}>{item.sourceType === "hn" ? "ポイント" : "視聴回数"}</span>
+              <span style={{ color: "#f59e0b", fontSize: "13px", fontWeight: "600" }}>{item.sourceType === "hn" ? `⬆ ${item.score?.toLocaleString()}` : `▶ ${formatViews(item.score)}`}</span>
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <span style={{ color: "#888", fontSize: "13px" }}>コメント</span>
+              <span style={{ color: "#6366f1", fontSize: "13px", fontWeight: "500" }}>{item.num_comments?.toLocaleString()} 件</span>
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <span style={{ color: "#888", fontSize: "13px" }}>投稿</span>
+              <span style={{ color: "#10b981", fontSize: "13px", fontWeight: "600" }}>{timeLabel(item.created_utc)}</span>
+            </div>
+            <a href={item.permalink} target="_blank" rel="noopener noreferrer" style={{ color: "#6366f1", fontSize: "13px", fontWeight: "500", textAlign: "right" }}>
+              {item.sourceType === "hn" ? "HNで開く →" : "YouTubeで開く →"}
+            </a>
           </div>
 
+          {/* Tabs */}
           <div style={{ display: "flex", gap: "8px" }}>
-            <Tab label="🤖 AI翻訳・分析" active={tab === "summary"} onClick={() => setTab("summary")} />
-            <Tab label="💬 コメント" active={tab === "comments"} onClick={() => setTab("comments")} badge={item.num_comments > 0 ? item.num_comments : null} />
+            {["summary", "comments"].map(t => (
+              <button key={t} onClick={() => setTab(t)} style={{
+                background: tab === t ? "#1A1A1A" : "#f5f0e6", color: tab === t ? "#fff" : "#888",
+                border: "none", borderRadius: "8px", padding: "8px 18px", fontSize: "13px", fontWeight: "600",
+                cursor: "pointer", transition: "all 0.2s",
+              }}>{t === "summary" ? "🤖 AI翻訳・分析" : `💬 コメント${item.num_comments > 0 ? ` (${item.num_comments})` : ""}`}</button>
+            ))}
           </div>
 
+          {/* Summary tab */}
           {tab === "summary" && (
-            <div style={{ background: "linear-gradient(135deg,#0a1628,#0d1f2d)", border: "1px solid #1e3a5f", borderRadius: "8px", padding: "16px" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px" }}>
-                <span style={{ color: "#60a5fa", fontSize: "12px", fontFamily: "monospace" }}>🤖 Claude AI翻訳 + 分析</span>
+            <div style={{ background: "#f5f0e6", borderRadius: "12px", padding: "20px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+                <span style={{ color: "#6366f1", fontSize: "13px", fontWeight: "600" }}>🤖 Claude AI翻訳</span>
                 {summary?.level && (
-                  <span style={{ color: levelColor[summary.level], background: levelColor[summary.level]+"20", border: `1px solid ${levelColor[summary.level]}40`, fontSize: "10px", padding: "2px 8px", borderRadius: "3px", fontFamily: "monospace" }}>{summary.level}向け</span>
+                  <span style={{ color: levelColor[summary.level], background: levelColor[summary.level]+"18", fontSize: "11px", fontWeight: "600", padding: "2px 10px", borderRadius: "4px" }}>{summary.level}向け</span>
                 )}
               </div>
-              {summaryLoading && <Shimmer lines={4} />}
+              {summaryLoading && <Shimmer lines={5} />}
               {summaryError && !summaryLoading && (
-                <div style={{ display: "flex", flexDirection: "column", gap: "12px", alignItems: "center" }}>
-                  <div style={{ color: "#fca5a5", fontSize: "12px" }}>{summaryError}</div>
-                  <button onClick={() => loadSummary(item)} style={{ background: "#1e3a5f", border: "1px solid #3b82f6", color: "#60a5fa", padding: "8px 20px", borderRadius: "6px", cursor: "pointer", fontSize: "12px", fontFamily: "monospace" }}>🔄 再試行</button>
+                <div style={{ textAlign: "center" }}>
+                  <p style={{ color: "#ef4444", fontSize: "13px", marginBottom: "12px" }}>{summaryError}</p>
+                  <button onClick={() => loadSummary(item)} style={{ background: "#1A1A1A", color: "#fff", border: "none", padding: "8px 24px", borderRadius: "8px", cursor: "pointer", fontSize: "13px", fontWeight: "600" }}>再試行</button>
                 </div>
               )}
               {!summaryLoading && !summaryError && summary && (
-                <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
-                  {summary.titleJa && <div style={{ color: "#e2e8f0", fontSize: "14px", fontWeight: "600", fontFamily: "monospace", borderBottom: "1px solid #1e3a5f", paddingBottom: "10px" }}>{summary.titleJa}</div>}
-                  <div style={{ color: "#bfdbfe", fontSize: "13px", lineHeight: "1.9", fontFamily: "monospace" }}>{summary.translation}</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                  {summary.titleJa && <h3 style={{ color: "#1A1A1A", fontSize: "16px", fontWeight: "700", lineHeight: "1.5", paddingBottom: "12px", borderBottom: "1px solid #e8e0d4" }}>{summary.titleJa}</h3>}
+                  <p style={{ color: "#444", fontSize: "14px", lineHeight: "1.9" }}>{summary.translation}</p>
                   {summary.points?.length > 0 && (
-                    <div style={{ borderTop: "1px solid #1e3a5f", paddingTop: "12px" }}>
-                      <div style={{ color: "#374151", fontSize: "11px", fontFamily: "monospace", marginBottom: "8px" }}>── 3つのポイント</div>
+                    <div style={{ paddingTop: "12px", borderTop: "1px solid #e8e0d4" }}>
+                      <p style={{ color: "#888", fontSize: "12px", fontWeight: "600", marginBottom: "10px" }}>3つのポイント</p>
                       {summary.points.map((p, i) => (
-                        <div key={i} style={{ display: "flex", gap: "8px", marginBottom: "7px" }}>
-                          <span style={{ color: "#34d399", fontFamily: "monospace", fontSize: "12px", flexShrink: 0 }}>0{i+1}</span>
-                          <span style={{ color: "#9ca3af", fontSize: "12px", lineHeight: "1.7" }}>{p}</span>
+                        <div key={i} style={{ display: "flex", gap: "10px", marginBottom: "8px" }}>
+                          <span style={{ color: "#10b981", fontSize: "13px", fontWeight: "700", flexShrink: 0 }}>0{i+1}</span>
+                          <span style={{ color: "#555", fontSize: "13px", lineHeight: "1.7" }}>{p}</span>
                         </div>
                       ))}
                     </div>
                   )}
                   {summary.impact && (
-                    <div style={{ background: "#0a2a1a", border: "1px solid #14532d", borderRadius: "6px", padding: "10px 12px" }}>
-                      <div style={{ color: "#34d399", fontSize: "11px", fontFamily: "monospace", marginBottom: "4px" }}>🇯🇵 日本への影響</div>
-                      <div style={{ color: "#86efac", fontSize: "12px", lineHeight: "1.7" }}>{summary.impact}</div>
+                    <div style={{ background: "#ecfdf5", borderRadius: "10px", padding: "14px 16px" }}>
+                      <p style={{ color: "#10b981", fontSize: "12px", fontWeight: "600", marginBottom: "6px" }}>🇯🇵 日本への影響</p>
+                      <p style={{ color: "#065f46", fontSize: "13px", lineHeight: "1.7" }}>{summary.impact}</p>
                     </div>
                   )}
                 </div>
@@ -344,29 +276,32 @@ ${sourceField}
             </div>
           )}
 
+          {/* Comments tab */}
           {tab === "comments" && (
             <div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "12px" }}>
-                <span style={{ color: "#60a5fa", fontSize: "12px", fontFamily: "monospace" }}>💬 専門家の反応（AI生成）</span>
-                {comments.length > 0 && <span style={{ color: "#374151", fontSize: "11px", fontFamily: "monospace" }}>{comments.length}件</span>}
-              </div>
-              {commentsLoading && [1,2,3].map(i => (
-                <div key={i} style={{ background: "#080c14", border: "1px solid #1a2332", borderRadius: "6px", padding: "12px 14px", marginBottom: "10px" }}>
-                  <Shimmer lines={3} />
-                </div>
-              ))}
+              {commentsLoading && [1,2,3].map(i => <div key={i} style={{ background: "#f5f0e6", borderRadius: "10px", padding: "16px", marginBottom: "10px" }}><Shimmer lines={3} /></div>)}
               {commentsError && !commentsLoading && (
-                <div style={{ display: "flex", flexDirection: "column", gap: "12px", alignItems: "center", padding: "20px 0" }}>
-                  <div style={{ color: "#fca5a5", fontSize: "12px" }}>{commentsError}</div>
-                  <button onClick={() => loadComments(item)} style={{ background: "#1e3a5f", border: "1px solid #3b82f6", color: "#60a5fa", padding: "8px 20px", borderRadius: "6px", cursor: "pointer", fontSize: "12px", fontFamily: "monospace" }}>🔄 再試行</button>
+                <div style={{ textAlign: "center", padding: "20px 0" }}>
+                  <p style={{ color: "#ef4444", fontSize: "13px", marginBottom: "12px" }}>{commentsError}</p>
+                  <button onClick={() => loadComments(item)} style={{ background: "#1A1A1A", color: "#fff", border: "none", padding: "8px 24px", borderRadius: "8px", cursor: "pointer", fontSize: "13px", fontWeight: "600" }}>再試行</button>
                 </div>
               )}
               {!commentsLoading && !commentsError && comments.length > 0 && (
                 <div>
-                  <div style={{ background: "#0a1a2a", border: "1px solid #1e3a5f", borderRadius: "6px", padding: "8px 12px", marginBottom: "12px" }}>
-                    <span style={{ color: "#4b5563", fontSize: "11px", fontFamily: "monospace" }}>ℹ️ AI専門家・エンジニアの視点からコメントをClaudeが生成・翻訳しています。</span>
-                  </div>
-                  {comments.map((c, i) => <CommentCard key={i} comment={c} index={i} />)}
+                  <p style={{ color: "#aaa", fontSize: "12px", marginBottom: "14px", padding: "10px 14px", background: "#f5f0e6", borderRadius: "8px" }}>AI専門家・エンジニアの視点からClaudeが生成・翻訳</p>
+                  {comments.map((c, i) => (
+                    <div key={i} style={{ background: "#f5f0e6", borderRadius: "10px", padding: "14px 16px", marginBottom: "10px", borderLeft: `3px solid ${Object.values(CATEGORY_COLORS)[i % 4]}` }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "8px" }}>
+                        <span style={{ color: "#888", fontSize: "12px", fontWeight: "500" }}>{c.author}</span>
+                        <span style={{ color: "#f59e0b", fontSize: "12px", fontWeight: "600" }}>👍 {c.score?.toLocaleString()}</span>
+                      </div>
+                      {c.bodyJa && <p style={{ color: "#1A1A1A", fontSize: "13px", lineHeight: "1.8", marginBottom: "8px" }}>{c.bodyJa}</p>}
+                      <details>
+                        <summary style={{ color: "#bbb", fontSize: "11px", cursor: "pointer" }}>▶ 原文</summary>
+                        <p style={{ color: "#aaa", fontSize: "12px", lineHeight: "1.7", marginTop: "8px", paddingTop: "8px", borderTop: "1px solid #e8e0d4" }}>{c.body}</p>
+                      </details>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
@@ -377,49 +312,89 @@ ${sourceField}
   );
 }
 
-function NewsCard({ item, isNew, onClick }) {
+/* ─── Hero Card (top story) ─── */
+function HeroCard({ item, onClick }) {
   const [hover, setHover] = useState(false);
-  const catColor = CATEGORY_COLORS[item.category] || "#9ca3af";
+  if (!item) return null;
+  const badge = SOURCE_BADGE[item.sourceType] || SOURCE_BADGE.yt;
   return (
     <div onClick={() => onClick(item)} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} style={{
-      background: "linear-gradient(135deg,#0f1117,#111827)",
-      border: `1px solid ${isNew ? "#34d399" : hover ? "#374151" : "#1f2937"}`,
-      borderRadius: "8px", padding: "16px", position: "relative", overflow: "hidden",
-      animation: isNew ? "fadeSlideIn 0.5s ease" : "none",
-      boxShadow: hover ? "0 8px 24px rgba(0,0,0,0.35)" : isNew ? "0 0 20px rgba(52,211,153,0.15)" : "none",
-      cursor: "pointer", transform: hover ? "translateY(-2px)" : "translateY(0)", transition: "all 0.2s ease",
+      background: "#FFFFFF", borderRadius: "16px", padding: "32px",
+      boxShadow: hover ? "0 12px 40px rgba(0,0,0,0.1)" : "0 2px 12px rgba(0,0,0,0.04)",
+      cursor: "pointer", transition: "all 0.3s ease", transform: hover ? "translateY(-3px)" : "none",
+      animation: "fadeIn 0.5s ease",
     }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-        <div style={{ display: "flex", gap: "6px" }}>
-          <span style={{ background: catColor+"22", color: catColor, border: `1px solid ${catColor}44`, borderRadius: "4px", padding: "2px 8px", fontSize: "10px", fontFamily: "monospace" }}>{item.category}</span>
-          {item.sourceType === "hn" ? (
-            <span style={{ color: "#ff6600", background: "#ff660015", border: "1px solid #ff660030", borderRadius: "3px", padding: "2px 6px", fontSize: "10px", fontFamily: "monospace" }}>🟠 HN</span>
-          ) : item.sourceType === "note" ? (
-            <span style={{ color: "#41c9b4", background: "#41c9b415", border: "1px solid #41c9b430", borderRadius: "3px", padding: "2px 6px", fontSize: "10px", fontFamily: "monospace" }}>📝 note</span>
-          ) : (
-            <span style={{ color: "#ff6666", background: "#ff000015", border: "1px solid #ff000030", borderRadius: "3px", padding: "2px 6px", fontSize: "10px", fontFamily: "monospace" }}>▶ YT</span>
-          )}
-        </div>
-        <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
-          {item.score > 100000 && <span style={{ fontSize: "10px" }}>🔥</span>}
-          <span style={{ color: "#4b5563", fontSize: "10px", fontFamily: "monospace" }}>{item.sourceType === "hn" ? `⬆${item.score}` : item.sourceType === "note" ? `♡${item.score}` : `▶${formatViews(item.score)}`}</span>
-          <span style={{ color: "#374151", fontSize: "10px", fontFamily: "monospace" }}>{timeLabel(item.created_utc)}</span>
-        </div>
+      <div style={{ display: "flex", gap: "10px", marginBottom: "16px", flexWrap: "wrap", alignItems: "center" }}>
+        <span style={{ background: "#10b981", color: "#fff", fontSize: "11px", fontWeight: "700", padding: "3px 12px", borderRadius: "4px", letterSpacing: "0.05em" }}>TODAY&apos;S TOP</span>
+        <CategoryPill category={item.category} />
+        <SourceBadge type={item.sourceType} />
+        <span style={{ color: "#10b981", fontSize: "13px", fontWeight: "700", marginLeft: "auto" }}>{timeLabel(item.created_utc)}</span>
       </div>
-      <div style={{ color: "#f1f5f9", fontSize: "13px", fontWeight: "600", lineHeight: "1.6", marginBottom: "6px", fontFamily: "monospace" }}>{item.titleJa || item.title}</div>
-      {item.titleJa && (
-        <div style={{ color: "#2d3748", fontSize: "10px", lineHeight: "1.5", marginBottom: "10px", fontFamily: "monospace" }}>
-          {item.title.slice(0, 70)}{item.title.length > 70 ? "..." : ""}
+      <h1 style={{ color: "#1A1A1A", fontSize: "24px", fontWeight: "800", lineHeight: "1.5", marginBottom: "12px" }}>{item.titleJa || item.title}</h1>
+      {item.titleJa && <p style={{ color: "#999", fontSize: "13px", lineHeight: "1.5", marginBottom: "16px" }}>{item.title}</p>}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div style={{ display: "flex", gap: "16px", color: "#888", fontSize: "13px" }}>
+          <span>{item.sourceType === "hn" ? `⬆ ${item.score?.toLocaleString()}` : `▶ ${formatViews(item.score)}`}</span>
+          <span>💬 {item.num_comments?.toLocaleString()}</span>
+          <span style={{ color: "#aaa" }}>{item.source}</span>
         </div>
-      )}
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <span style={{ color: "#374151", fontSize: "10px", fontFamily: "monospace" }}>💬 {item.num_comments?.toLocaleString()}</span>
-        <span style={{ color: hover ? "#34d399" : "#374151", fontSize: "10px", fontFamily: "monospace", transition: "color 0.2s" }}>詳細 + AI翻訳 →</span>
+        <span style={{
+          background: hover ? "#1A1A1A" : "#10b981", color: "#fff",
+          padding: "8px 20px", borderRadius: "8px", fontSize: "13px", fontWeight: "700",
+          transition: "all 0.2s",
+        }}>詳細 + AI翻訳 →</span>
       </div>
     </div>
   );
 }
 
+/* ─── News Card ─── */
+function NewsCard({ item, onClick, index }) {
+  const [hover, setHover] = useState(false);
+  const isYT = item.sourceType === "yt";
+  return (
+    <div onClick={() => onClick(item)} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} style={{
+      background: "#FFFFFF", borderRadius: "12px", overflow: "hidden",
+      boxShadow: hover ? "0 8px 28px rgba(0,0,0,0.1)" : "0 1px 6px rgba(0,0,0,0.04)",
+      cursor: "pointer", transition: "all 0.2s ease", transform: hover ? "translateY(-2px)" : "none",
+      animation: `fadeIn 0.4s ease ${index * 0.05}s both`,
+    }}>
+      {/* YouTube thumbnail */}
+      {isYT && (
+        <div style={{ position: "relative", paddingBottom: "56.25%", background: "#f0ebe3" }}>
+          <img
+            src={`https://img.youtube.com/vi/${item.id}/mqdefault.jpg`}
+            alt=""
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+            loading="lazy"
+          />
+          <div style={{ position: "absolute", bottom: "8px", right: "8px", background: "rgba(0,0,0,0.75)", color: "#fff", fontSize: "11px", fontWeight: "600", padding: "2px 8px", borderRadius: "4px" }}>▶ {formatViews(item.score)}</div>
+        </div>
+      )}
+      <div style={{ padding: "16px" }}>
+        <div style={{ display: "flex", gap: "6px", marginBottom: "10px", flexWrap: "wrap", alignItems: "center" }}>
+          <SourceBadge type={item.sourceType} />
+          <CategoryPill category={item.category} />
+          <span style={{ color: "#10b981", fontSize: "12px", fontWeight: "600", marginLeft: "auto" }}>{timeLabel(item.created_utc)}</span>
+        </div>
+        <h3 style={{ color: "#1A1A1A", fontSize: "14px", fontWeight: "700", lineHeight: "1.6", marginBottom: "6px" }}>{item.titleJa || item.title}</h3>
+        {item.titleJa && <p style={{ color: "#bbb", fontSize: "11px", lineHeight: "1.4", marginBottom: "10px" }}>{item.title.slice(0, 80)}{item.title.length > 80 ? "..." : ""}</p>}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div style={{ display: "flex", gap: "12px", color: "#aaa", fontSize: "12px" }}>
+            {!isYT && <span>{item.sourceType === "hn" ? `⬆ ${item.score}` : `▶ ${formatViews(item.score)}`}</span>}
+            <span>💬 {item.num_comments?.toLocaleString()}</span>
+          </div>
+          <span style={{
+            color: hover ? "#fff" : "#10b981", background: hover ? "#10b981" : "#ecfdf5",
+            padding: "4px 14px", borderRadius: "6px", fontSize: "12px", fontWeight: "600", transition: "all 0.2s",
+          }}>詳細 + AI翻訳</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── YouTube Transcript Panel ─── */
 function YouTubeTranscriptPanel() {
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
@@ -434,197 +409,96 @@ function YouTubeTranscriptPanel() {
   async function handleSubmit(e) {
     e.preventDefault();
     if (!url.trim()) return;
-    setLoading(true);
-    setError(null);
-    setResult(null);
-    setShowFull(false);
-    setShowRaw(false);
-    setTranscriptLang(null);
-    setRawTranscript("");
+    setLoading(true); setError(null); setResult(null); setShowFull(false); setShowRaw(false); setTranscriptLang(null); setRawTranscript("");
     try {
       setStep("字幕を取得中...");
-      const transcriptRes = await fetch("/api/youtube-transcript", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: url.trim() }),
-      });
+      const transcriptRes = await fetch("/api/youtube-transcript", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ url: url.trim() }) });
       const transcriptData = await transcriptRes.json();
       if (transcriptData.error) throw new Error(transcriptData.error);
-
       setTranscriptLang(transcriptData.lang);
       const fullText = transcriptData.transcript;
       setRawTranscript(fullText);
-
-      // Step 1: 全文を日本語に翻訳（5,000文字ずつチャンク分割）
       const CHUNK_SIZE = 5000;
       const chunks = [];
-      for (let i = 0; i < fullText.length; i += CHUNK_SIZE) {
-        chunks.push(fullText.slice(i, i + CHUNK_SIZE));
-      }
-
+      for (let i = 0; i < fullText.length; i += CHUNK_SIZE) chunks.push(fullText.slice(i, i + CHUNK_SIZE));
       let translatedParts = [];
       for (let i = 0; i < chunks.length; i++) {
         setStep(`日本語に翻訳中... (${i + 1}/${chunks.length})`);
-        const chunkText = await callClaude([{ role: "user", content:
-          `以下のYouTube字幕テキスト（パート${i + 1}/${chunks.length}）を日本語に翻訳してください。
-自然な日本語で、句読点・改行を適切に追加して読みやすくしてください。
-既に日本語の部分はそのまま残してください。
-JSONではなくプレーンテキストのみ返してください（前置き・説明不要）。
-
-字幕テキスト:
-${chunks[i]}`
-        }], 4096);
+        const chunkText = await callClaude([{ role: "user", content: `以下のYouTube字幕テキスト（パート${i + 1}/${chunks.length}）を日本語に翻訳してください。\n自然な日本語で、句読点・改行を適切に追加して読みやすくしてください。\n既に日本語の部分はそのまま残してください。\nJSONではなくプレーンテキストのみ返してください（前置き・説明不要）。\n\n字幕テキスト:\n${chunks[i]}` }], 4096);
         translatedParts.push(chunkText);
       }
-
       const translatedFull = translatedParts.join("\n\n");
-
-      // Step 2: 翻訳済み全文から要約＋記事を生成
       setStep("記事を生成中...");
       const articleInput = translatedFull.slice(0, 30000);
-      const articleText = await callClaude([{ role: "user", content:
-        `以下はYouTube動画の字幕を日本語に翻訳したテキストです。これを元に記事を作成してください。
-JSONのみ返してください（前置き不要）。
-
-翻訳済みテキスト（${translatedFull.length.toLocaleString()}文字）:
-${articleInput}
-
-以下のJSON形式で返してください:
-{"summary":"3行まとめ（各行は改行で区切る、各行40文字以内）","article":"ニュース記事形式の本文（見出し・段落分けして1500〜3000文字程度、動画の内容を漏れなくカバー）"}`
-      }], 4096);
-
+      const articleText = await callClaude([{ role: "user", content: `以下はYouTube動画の字幕を日本語に翻訳したテキストです。これを元に記事を作成してください。\nJSONのみ返してください（前置き不要）。\n\n翻訳済みテキスト（${translatedFull.length.toLocaleString()}文字）:\n${articleInput}\n\n以下のJSON形式で返してください:\n{"summary":"3行まとめ（各行は改行で区切る、各行40文字以内）","article":"ニュース記事形式の本文（見出し・段落分けして1500〜3000文字程度、動画の内容を漏れなくカバー）"}` }], 4096);
       let parsed;
-      try {
-        parsed = JSON.parse(articleText);
-      } catch (parseErr) {
-        console.error("Article JSON parse failed. Raw:", articleText);
-        throw new Error("記事の生成に失敗しました。再試行してください。");
-      }
-
+      try { parsed = JSON.parse(articleText); } catch (parseErr) { console.error("Article JSON parse failed:", articleText); throw new Error("記事の生成に失敗しました。再試行してください。"); }
       parsed.fullText = translatedFull;
       setResult(parsed);
-    } catch (e) {
-      console.error("YouTube transcript error:", e);
-      setError(e.message);
-    }
-    setLoading(false);
-    setStep("");
+    } catch (e) { console.error("YouTube transcript error:", e); setError(e.message); }
+    setLoading(false); setStep("");
   }
 
+  const panelBg = "#FFFFFF";
+  const sectionStyle = { background: panelBg, borderRadius: "12px", padding: "20px", boxShadow: "0 1px 6px rgba(0,0,0,0.04)" };
+
   return (
-    <div style={{ padding: "20px 24px 40px", maxWidth: "800px", margin: "0 auto" }}>
-      <div style={{ marginBottom: "16px" }}>
-        <div style={{ color: "#34d399", fontSize: "14px", fontFamily: "monospace", marginBottom: "6px" }}>▶ YouTube字幕 → AI整形</div>
-        <div style={{ color: "#4b5563", fontSize: "11px", fontFamily: "monospace", lineHeight: "1.8" }}>YouTube動画のURLを貼るだけで、字幕を自動取得してClaudeが日本語で整形します</div>
+    <div style={{ padding: "24px", maxWidth: "800px", margin: "0 auto" }}>
+      <div style={{ marginBottom: "20px" }}>
+        <h2 style={{ color: "#1A1A1A", fontSize: "18px", fontWeight: "700", marginBottom: "6px" }}>🎬 YouTube字幕 → AI記事生成</h2>
+        <p style={{ color: "#888", fontSize: "13px" }}>URLを貼るだけで字幕を取得し、Claudeが日本語記事に変換します</p>
       </div>
-
-      <form onSubmit={handleSubmit} style={{ display: "flex", gap: "8px", marginBottom: "20px" }}>
-        <input
-          type="text"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          placeholder="https://www.youtube.com/watch?v=..."
-          style={{
-            flex: 1, background: "#0f1117", border: "1px solid #1f2937", borderRadius: "6px",
-            padding: "10px 14px", color: "#e2e8f0", fontSize: "13px", fontFamily: "monospace",
-            outline: "none",
-          }}
-          onFocus={(e) => e.target.style.borderColor = "#3b82f6"}
-          onBlur={(e) => e.target.style.borderColor = "#1f2937"}
+      <form onSubmit={handleSubmit} style={{ display: "flex", gap: "8px", marginBottom: "24px" }}>
+        <input type="text" value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://www.youtube.com/watch?v=..."
+          style={{ flex: 1, background: "#fff", border: "1px solid #e8e0d4", borderRadius: "10px", padding: "12px 16px", color: "#1A1A1A", fontSize: "14px", outline: "none" }}
+          onFocus={(e) => e.target.style.borderColor = "#10b981"} onBlur={(e) => e.target.style.borderColor = "#e8e0d4"}
         />
-        <button
-          type="submit"
-          disabled={loading || !url.trim()}
-          style={{
-            background: loading ? "#1e3a5f" : "#34d399", color: loading ? "#60a5fa" : "#000",
-            border: "none", borderRadius: "6px", padding: "10px 20px",
-            fontSize: "12px", fontFamily: "monospace", fontWeight: "700",
-            cursor: loading ? "not-allowed" : "pointer", whiteSpace: "nowrap",
-            opacity: !url.trim() ? 0.5 : 1, transition: "all 0.2s",
-          }}
-        >
-          {loading ? step || "処理中..." : "字幕を取得"}
-        </button>
+        <button type="submit" disabled={loading || !url.trim()} style={{
+          background: loading ? "#e8e0d4" : "#1A1A1A", color: loading ? "#888" : "#fff",
+          border: "none", borderRadius: "10px", padding: "12px 24px", fontSize: "14px", fontWeight: "700",
+          cursor: loading ? "not-allowed" : "pointer", opacity: !url.trim() ? 0.5 : 1, whiteSpace: "nowrap",
+        }}>{loading ? step || "処理中..." : "字幕を取得"}</button>
       </form>
-
-      {loading && (
-        <div style={{ background: "linear-gradient(135deg,#0a1628,#0d1f2d)", border: "1px solid #1e3a5f", borderRadius: "8px", padding: "20px" }}>
-          <Shimmer lines={5} />
-          <div style={{ color: "#4b5563", fontSize: "11px", fontFamily: "monospace", marginTop: "12px", textAlign: "center" }}>{step}</div>
-        </div>
-      )}
-
+      {loading && <div style={sectionStyle}><Shimmer lines={5} /><p style={{ color: "#aaa", fontSize: "12px", marginTop: "12px", textAlign: "center" }}>{step}</p></div>}
       {error && !loading && (
-        <div style={{ background: "#1a0a0a", border: "1px solid #7f1d1d", borderRadius: "8px", padding: "16px", display: "flex", flexDirection: "column", alignItems: "center", gap: "10px" }}>
-          <div style={{ color: "#fca5a5", fontSize: "12px", fontFamily: "monospace" }}>{error}</div>
-          <button onClick={handleSubmit} style={{ background: "#1e3a5f", border: "1px solid #3b82f6", color: "#60a5fa", padding: "6px 16px", borderRadius: "6px", cursor: "pointer", fontSize: "11px", fontFamily: "monospace" }}>🔄 再試行</button>
+        <div style={{ ...sectionStyle, background: "#fef2f2", textAlign: "center" }}>
+          <p style={{ color: "#ef4444", fontSize: "13px", marginBottom: "12px" }}>{error}</p>
+          <button onClick={handleSubmit} style={{ background: "#1A1A1A", color: "#fff", border: "none", padding: "8px 20px", borderRadius: "8px", cursor: "pointer", fontSize: "13px", fontWeight: "600" }}>再試行</button>
         </div>
       )}
-
       {result && !loading && (
         <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           {(transcriptLang || rawTranscript) && (
-            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
-              {transcriptLang && <span style={{ background: "#34d39922", color: "#34d399", border: "1px solid #34d39944", borderRadius: "4px", padding: "2px 10px", fontSize: "11px", fontFamily: "monospace" }}>字幕言語: {transcriptLang}</span>}
-              {rawTranscript && <span style={{ background: "#60a5fa22", color: "#60a5fa", border: "1px solid #60a5fa44", borderRadius: "4px", padding: "2px 10px", fontSize: "11px", fontFamily: "monospace" }}>字幕: {rawTranscript.length.toLocaleString()}文字</span>}
+            <div style={{ display: "flex", gap: "8px" }}>
+              {transcriptLang && <span style={{ background: "#ecfdf5", color: "#10b981", fontSize: "12px", fontWeight: "600", padding: "4px 12px", borderRadius: "6px" }}>言語: {transcriptLang}</span>}
+              {rawTranscript && <span style={{ background: "#eff6ff", color: "#6366f1", fontSize: "12px", fontWeight: "600", padding: "4px 12px", borderRadius: "6px" }}>{rawTranscript.length.toLocaleString()}文字</span>}
             </div>
           )}
-          {/* 3行まとめ */}
-          <div style={{ background: "linear-gradient(135deg,#0a1628,#0d1f2d)", border: "1px solid #1e3a5f", borderRadius: "8px", padding: "16px" }}>
-            <div style={{ color: "#60a5fa", fontSize: "12px", fontFamily: "monospace", marginBottom: "12px" }}>① 3行まとめ</div>
+          <div style={sectionStyle}>
+            <p style={{ color: "#6366f1", fontSize: "13px", fontWeight: "600", marginBottom: "14px" }}>① 3行まとめ</p>
             {result.summary.split("\n").map((line, i) => (
-              <div key={i} style={{ display: "flex", gap: "8px", marginBottom: "7px" }}>
-                <span style={{ color: "#34d399", fontFamily: "monospace", fontSize: "12px", flexShrink: 0 }}>0{i + 1}</span>
-                <span style={{ color: "#e2e8f0", fontSize: "13px", lineHeight: "1.7", fontFamily: "monospace" }}>{line}</span>
+              <div key={i} style={{ display: "flex", gap: "10px", marginBottom: "8px" }}>
+                <span style={{ color: "#10b981", fontSize: "14px", fontWeight: "700", flexShrink: 0 }}>0{i + 1}</span>
+                <span style={{ color: "#1A1A1A", fontSize: "14px", lineHeight: "1.7" }}>{line}</span>
               </div>
             ))}
           </div>
-
-          {/* 記事 */}
-          <div style={{ background: "linear-gradient(135deg,#0a1628,#0d1f2d)", border: "1px solid #1e3a5f", borderRadius: "8px", padding: "16px" }}>
-            <div style={{ color: "#60a5fa", fontSize: "12px", fontFamily: "monospace", marginBottom: "12px" }}>② 記事</div>
-            <div style={{ color: "#bfdbfe", fontSize: "13px", lineHeight: "2.0", fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{result.article}</div>
+          <div style={sectionStyle}>
+            <p style={{ color: "#6366f1", fontSize: "13px", fontWeight: "600", marginBottom: "14px" }}>② 記事</p>
+            <div style={{ color: "#333", fontSize: "14px", lineHeight: "2.0", whiteSpace: "pre-wrap" }}>{result.article}</div>
           </div>
-
-          {/* 全文トグル */}
-          <div style={{ background: "linear-gradient(135deg,#0a1628,#0d1f2d)", border: "1px solid #1e3a5f", borderRadius: "8px", overflow: "hidden" }}>
-            <button
-              onClick={() => setShowFull(!showFull)}
-              style={{
-                width: "100%", background: "transparent", border: "none", borderBottom: showFull ? "1px solid #1e3a5f" : "none",
-                padding: "14px 16px", display: "flex", justifyContent: "space-between", alignItems: "center",
-                cursor: "pointer", color: "#60a5fa", fontSize: "12px", fontFamily: "monospace",
-              }}
-            >
-              <span>③ 全文（日本語翻訳）</span>
-              <span style={{ color: "#4b5563", fontSize: "11px" }}>{showFull ? "▲ 閉じる" : "▼ 開く"}</span>
+          <div style={{ ...sectionStyle, padding: 0, overflow: "hidden" }}>
+            <button onClick={() => setShowFull(!showFull)} style={{ width: "100%", background: "transparent", border: "none", padding: "16px 20px", display: "flex", justifyContent: "space-between", cursor: "pointer", color: "#6366f1", fontSize: "13px", fontWeight: "600" }}>
+              <span>③ 全文（日本語翻訳）</span><span style={{ color: "#aaa" }}>{showFull ? "▲" : "▼"}</span>
             </button>
-            {showFull && (
-              <div style={{ padding: "16px", maxHeight: "500px", overflowY: "auto" }}>
-                <div style={{ color: "#9ca3af", fontSize: "12px", lineHeight: "2.0", fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{result.fullText}</div>
-              </div>
-            )}
+            {showFull && <div style={{ padding: "0 20px 20px", maxHeight: "500px", overflowY: "auto" }}><p style={{ color: "#555", fontSize: "13px", lineHeight: "2.0", whiteSpace: "pre-wrap" }}>{result.fullText}</p></div>}
           </div>
-
-          {/* 生テキストトグル */}
           {rawTranscript && (
-            <div style={{ background: "linear-gradient(135deg,#0a1628,#0d1f2d)", border: "1px solid #1e3a5f", borderRadius: "8px", overflow: "hidden" }}>
-              <button
-                onClick={() => setShowRaw(!showRaw)}
-                style={{
-                  width: "100%", background: "transparent", border: "none", borderBottom: showRaw ? "1px solid #1e3a5f" : "none",
-                  padding: "14px 16px", display: "flex", justifyContent: "space-between", alignItems: "center",
-                  cursor: "pointer", color: "#4b5563", fontSize: "12px", fontFamily: "monospace",
-                }}
-              >
-                <span>④ 生テキスト（元の字幕データ）</span>
-                <span style={{ fontSize: "11px" }}>{showRaw ? "▲ 閉じる" : "▼ 開く"}</span>
+            <div style={{ ...sectionStyle, padding: 0, overflow: "hidden" }}>
+              <button onClick={() => setShowRaw(!showRaw)} style={{ width: "100%", background: "transparent", border: "none", padding: "16px 20px", display: "flex", justifyContent: "space-between", cursor: "pointer", color: "#aaa", fontSize: "13px", fontWeight: "600" }}>
+                <span>④ 生テキスト</span><span>{showRaw ? "▲" : "▼"}</span>
               </button>
-              {showRaw && (
-                <div style={{ padding: "16px", maxHeight: "400px", overflowY: "auto" }}>
-                  <div style={{ color: "#4b5563", fontSize: "11px", lineHeight: "1.8", fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{rawTranscript}</div>
-                </div>
-              )}
+              {showRaw && <div style={{ padding: "0 20px 20px", maxHeight: "400px", overflowY: "auto" }}><p style={{ color: "#999", fontSize: "12px", lineHeight: "1.8", whiteSpace: "pre-wrap" }}>{rawTranscript}</p></div>}
             </div>
           )}
         </div>
@@ -633,6 +507,7 @@ ${articleInput}
   );
 }
 
+/* ─── Main Dashboard ─── */
 export default function Dashboard() {
   const [news, setNews] = useState([]);
   const [filter, setFilter] = useState("全て");
@@ -645,49 +520,32 @@ export default function Dashboard() {
   const [usingFallback, setUsingFallback] = useState(false);
   const [mainTab, setMainTab] = useState("news");
   const [noteArticles, setNoteArticles] = useState([]);
+  const [noteFilter, setNoteFilter] = useState("全て");
 
   useEffect(() => {
-    const t = setInterval(() => {
-      setTick(n => n + 1);
-      setNextUpdate(prev => prev <= 1 ? 300 : prev - 1);
-    }, 1000);
+    const t = setInterval(() => { setTick(n => n + 1); setNextUpdate(prev => prev <= 1 ? 300 : prev - 1); }, 1000);
     return () => clearInterval(t);
   }, []);
 
-  useEffect(() => {
-    if (tick === 0 || nextUpdate === 300) fetchAll();
-  }, [tick === 0, nextUpdate === 300]);
+  useEffect(() => { if (tick === 0 || nextUpdate === 300) fetchAll(); }, [tick === 0, nextUpdate === 300]);
 
   async function fetchAll() {
     setStatus("データ取得中...");
-    const [ytResults, hnResults, noteResults] = await Promise.all([
-      fetchYouTube(),
-      fetchHackerNews(),
-      fetchNoteArticles(),
-    ]);
+    const [ytResults, hnResults, noteResults] = await Promise.all([fetchYouTube(), fetchHackerNews(), fetchNoteArticles()]);
     setNoteArticles(noteResults);
     const allResults = [...ytResults, ...hnResults];
     if (allResults.length > 0) {
-      setUsingFallback(false);
-      setStatus("AI翻訳中...");
+      setUsingFallback(false); setStatus("AI翻訳中...");
       const translated = await batchTranslate(allResults);
       updateNews(translated.sort((a, b) => b.score - a.score));
     } else {
-      setUsingFallback(true);
-      setStatus("AI生成中...");
-      const generated = await generateNews();
-      updateNews(generated);
+      setUsingFallback(true); setStatus("AI生成中...");
+      updateNews(await generateNews());
     }
-    setLastUpdate(new Date());
-    setStatus("LIVE");
+    setLastUpdate(new Date()); setStatus("LIVE");
   }
 
-  function updateNews(items) {
-    setNews(items);
-    const ids = items.slice(0, 3).map(i => i.id);
-    setNewIds(ids);
-    setTimeout(() => setNewIds([]), 3000);
-  }
+  function updateNews(items) { setNews(items); const ids = items.slice(0, 3).map(i => i.id); setNewIds(ids); setTimeout(() => setNewIds([]), 3000); }
 
   async function fetchYouTube() {
     const results = [];
@@ -695,241 +553,245 @@ export default function Dashboard() {
       try {
         const res = await fetch(`/api/youtube?q=${encodeURIComponent(yt.query)}`);
         const data = await res.json();
-        const items = data?.items || [];
-        items.forEach((v) => {
-          const publishedAt = new Date(v.publishedAt);
-          results.push({
-            id: v.id,
-            title: v.title,
-            source: v.channelTitle,
-            author: v.channelTitle,
-            score: v.viewCount,
-            num_comments: v.commentCount,
-            created_utc: Math.floor(publishedAt.getTime() / 1000),
-            permalink: `https://www.youtube.com/watch?v=${v.id}`,
-            category: yt.category,
-            titleJa: null,
-            sourceType: "yt",
-          });
+        (data?.items || []).forEach((v) => {
+          results.push({ id: v.id, title: v.title, source: v.channelTitle, author: v.channelTitle, score: v.viewCount, num_comments: v.commentCount, created_utc: Math.floor(new Date(v.publishedAt).getTime() / 1000), permalink: `https://www.youtube.com/watch?v=${v.id}`, category: yt.category, titleJa: null, sourceType: "yt" });
         });
       } catch { /* skip */ }
     }
-    // Deduplicate by id
     const seen = new Set();
-    const unique = results.filter(r => {
-      if (seen.has(r.id)) return false;
-      seen.add(r.id);
-      return true;
-    });
-    return unique.sort((a, b) => b.score - a.score).slice(0, 12);
+    return results.filter(r => { if (seen.has(r.id)) return false; seen.add(r.id); return true; }).sort((a, b) => b.score - a.score).slice(0, 12);
   }
 
   async function fetchHackerNews() {
     try {
       const res = await fetch("/api/hackernews?limit=8");
       const data = await res.json();
-      return (data?.items || []).map((item) => ({
-        id: `hn-${item.id}`,
-        title: item.title,
-        source: "Hacker News",
-        author: item.author,
-        score: item.score,
-        num_comments: item.commentCount,
-        created_utc: item.time,
-        permalink: item.url,
-        category: classifyCategory(item.title),
-        titleJa: null,
-        sourceType: "hn",
-      }));
-    } catch {
-      return [];
-    }
+      return (data?.items || []).map((item) => ({ id: `hn-${item.id}`, title: item.title, source: "Hacker News", author: item.author, score: item.score, num_comments: item.commentCount, created_utc: item.time, permalink: item.url, category: classifyCategory(item.title), titleJa: null, sourceType: "hn" }));
+    } catch { return []; }
   }
 
   async function fetchNoteArticles() {
     try {
-      const res = await fetch("/api/note-articles?limit=8");
+      const res = await fetch("/api/note-articles?limit=16");
       const data = await res.json();
-      return (data?.items || []).map((item) => ({
-        id: `note-${item.id}`,
-        title: item.title,
-        url: item.url,
-        publishedAt: item.publishedAt,
-        sourceType: "note",
-      }));
-    } catch {
-      return [];
-    }
+      return (data?.items || []).map((item) => ({ id: `note-${item.id}`, title: item.title, url: item.url, author: item.author, publishedAt: item.publishedAt, category: item.category || "AI", sourceType: "note" }));
+    } catch { return []; }
   }
 
   async function batchTranslate(posts) {
     try {
       const lines = posts.map((p, i) => `${i}: ${p.title}`).join("\n");
-      const text = await callClaude([{ role: "user", content:
-        `以下のタイトルを日本語に翻訳してください。JSONの配列のみ返してください（説明不要）:\n["翻訳0","翻訳1",...]\n各40文字以内。\n\n${lines}`
-      }], 600);
+      const text = await callClaude([{ role: "user", content: `以下のタイトルを日本語に翻訳してください。JSONの配列のみ返してください（説明不要）:\n["翻訳0","翻訳1",...]\n各40文字以内。\n\n${lines}` }], 600);
       let translations;
-      try {
-        translations = JSON.parse(text);
-      } catch (parseErr) {
-        console.error("batchTranslate JSON parse failed. Raw text:", text);
-        throw new Error(`JSON parse failed: ${parseErr.message}`);
-      }
+      try { translations = JSON.parse(text); } catch (parseErr) { console.error("batchTranslate JSON parse failed:", text); throw parseErr; }
       return posts.map((p, i) => ({ ...p, titleJa: translations[i] || null }));
-    } catch (e) {
-      console.error("batchTranslate error:", e);
-      return posts;
-    }
+    } catch (e) { console.error("batchTranslate error:", e); return posts; }
   }
 
   async function generateNews() {
     try {
-      const text = await callClaude([{ role: "user", content:
-        `AI業界のリアルなYouTube動画風ニュースを8件生成してください。JSONのみ:\n[{"id":"g1","title":"英語タイトル","titleJa":"日本語（40字以内）","source":"チャンネル名","author":"チャンネル名","score":数値,"num_comments":数値,"created_utc":${Math.floor(Date.now()/1000)-3600},"permalink":"https://www.youtube.com/watch?v=dQw4w9WgXcQ","category":"研究|ツール|ビジネス|モデル"}]`
-      }]);
-      try {
-        return JSON.parse(text);
-      } catch (parseErr) {
-        console.error("generateNews JSON parse failed. Raw text:", text);
-        throw parseErr;
-      }
-    } catch (e) {
-      console.error("generateNews error:", e.message);
-      return FALLBACK_NEWS;
-    }
+      const text = await callClaude([{ role: "user", content: `AI業界のリアルなYouTube動画風ニュースを8件生成してください。JSONのみ:\n[{"id":"g1","title":"英語タイトル","titleJa":"日本語（40字以内）","source":"チャンネル名","author":"チャンネル名","score":数値,"num_comments":数値,"created_utc":${Math.floor(Date.now()/1000)-3600},"permalink":"https://www.youtube.com/watch?v=dQw4w9WgXcQ","category":"研究|ツール|ビジネス|モデル","sourceType":"yt"}]` }]);
+      try { return JSON.parse(text); } catch (parseErr) { console.error("generateNews JSON parse failed:", text); throw parseErr; }
+    } catch (e) { console.error("generateNews error:", e.message); return FALLBACK_NEWS; }
   }
 
   const filtered = filter === "全て" ? news : news.filter(n => n.category === filter);
+  const heroItem = filtered[0] || null;
+  const gridItems = filtered.slice(1);
+  const ytItems = filtered.filter(n => n.sourceType === "yt");
+  const nonYtItems = filtered.filter(n => n.sourceType !== "yt");
   const isLoading = status !== "LIVE" && news.length === 0;
 
   return (
-    <div style={{ minHeight: "100vh", background: "#060810", color: "#e2e8f0", fontFamily: "monospace" }}>
-      <div style={{ position: "fixed", inset: 0, pointerEvents: "none", backgroundImage: "linear-gradient(#0f172a33 1px,transparent 1px),linear-gradient(90deg,#0f172a33 1px,transparent 1px)", backgroundSize: "40px 40px" }} />
-      <div style={{ position: "relative", zIndex: 1 }}>
-        {/* Header */}
-        <div style={{ padding: "18px 24px 14px", borderBottom: "1px solid #1f2937", background: "rgba(6,8,16,0.95)", backdropFilter: "blur(10px)", position: "sticky", top: 0, zIndex: 10 }}>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+    <div style={{ minHeight: "100vh", background: "#f5f0e6", color: "#1A1A1A", fontFamily: "'Noto Sans JP', sans-serif" }}>
+      {/* ─── Header ─── */}
+      <header style={{
+        padding: "14px 32px", borderBottom: "1px solid #ddd5c8",
+        background: "#f5f0e6",
+        position: "sticky", top: 0, zIndex: 10,
+        display: "flex", justifyContent: "space-between", alignItems: "center",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+            <img src="/logo_transparent.jpg" alt="ととのえる屋" style={{ height: "56px" }} />
+            <span style={{ color: "#a09080", fontSize: "12px", lineHeight: "1.6", maxWidth: "260px" }}>AI関連のニュース・YouTube・noteをリアルタイムで収集し、日本語でお届けします</span>
+          </div>
+          <div style={{
+            display: "flex", alignItems: "center", gap: "6px",
+            background: status === "LIVE" ? "#ecfdf5" : "#fef3c7",
+            padding: "4px 12px", borderRadius: "20px",
+          }}>
+            <span style={{ color: status === "LIVE" ? "#10b981" : "#f59e0b", animation: "pulse 1.5s infinite", fontSize: "10px" }}>●</span>
+            <span style={{ color: status === "LIVE" ? "#10b981" : "#f59e0b", fontSize: "12px", fontWeight: "700" }}>{status}</span>
+          </div>
+          {usingFallback && <span style={{ color: "#f59e0b", fontSize: "12px", fontWeight: "500" }}>AI生成モード</span>}
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+          {/* Nav tabs */}
+          <nav style={{ display: "flex", gap: "4px" }}>
+            {[{ key: "news", label: "📡 ニュース" }, { key: "transcript", label: "🎬 字幕" }].map(t => (
+              <button key={t.key} onClick={() => setMainTab(t.key)} style={{
+                background: mainTab === t.key ? "#1A1A1A" : "transparent",
+                color: mainTab === t.key ? "#fff" : "#888",
+                border: "none", borderRadius: "8px", padding: "6px 16px", fontSize: "13px", fontWeight: "600",
+                cursor: "pointer", transition: "all 0.2s",
+              }}>{t.label}</button>
+            ))}
+          </nav>
+          <div style={{ color: "#bbb", fontSize: "12px" }}>
+            {lastUpdate && <span>更新 {lastUpdate.toLocaleTimeString("ja-JP")}</span>}
+            <span style={{ marginLeft: "8px" }}>次回 {nextUpdate}s</span>
+          </div>
+        </div>
+      </header>
+
+      {mainTab === "news" && (
+        <main style={{ maxWidth: "1200px", margin: "0 auto", padding: "32px 24px 60px" }}>
+
+          {/* ─── Ticker ─── */}
+          {news.length > 0 && (
+            <div style={{ overflow: "hidden", marginBottom: "32px", padding: "8px 0", borderBottom: "1px solid #e8e0d4" }}>
+              <div style={{ display: "flex", whiteSpace: "nowrap", animation: "ticker 60s linear infinite", color: "#10b981", fontSize: "13px", fontWeight: "500" }}>
+                {[0,1].map(k => <span key={k} style={{ paddingRight: "60px" }}>🔴 LIVE　　{news.map(n => n.titleJa || n.title).join("　//　")}</span>)}
+              </div>
+            </div>
+          )}
+
+          {/* ─── Filter ─── */}
+          <div style={{ display: "flex", gap: "8px", marginBottom: "28px", flexWrap: "wrap", alignItems: "center" }}>
+            {CATEGORIES.map(cat => (
+              <button key={cat} onClick={() => setFilter(cat)} style={{
+                background: filter === cat ? "#1A1A1A" : "#FFFFFF",
+                color: filter === cat ? "#fff" : "#888",
+                border: filter === cat ? "none" : "1px solid #e8e0d4",
+                borderRadius: "8px", padding: "6px 18px", fontSize: "13px", fontWeight: "600",
+                cursor: "pointer", transition: "all 0.2s",
+              }}>{cat}</button>
+            ))}
+            <span style={{ color: "#bbb", fontSize: "13px", marginLeft: "auto" }}>{filtered.length}件</span>
+          </div>
+
+          {/* ─── Loading skeleton ─── */}
+          {isLoading && (
             <div>
-              <div style={{ fontSize: "20px", fontWeight: "800", letterSpacing: "0.15em", color: "#f0fdf4" }}>▶ AI_RADAR</div>
-              <div style={{ color: "#374151", fontSize: "11px", marginTop: "2px" }}>
-                YouTube × HackerNews × note × Claude AI — リアルタイム翻訳
-                {usingFallback && <span style={{ color: "#f59e0b", marginLeft: "8px" }}>[AI生成モード]</span>}
+              <div style={{ background: "#fff", borderRadius: "16px", padding: "32px", marginBottom: "24px" }}><Shimmer lines={4} /></div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: "16px" }}>
+                {Array.from({ length: 6 }).map((_, i) => <div key={i} style={{ background: "#fff", borderRadius: "12px", padding: "20px" }}><Shimmer lines={4} /></div>)}
               </div>
             </div>
-            <div style={{ textAlign: "right" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: status === "LIVE" ? "#34d399" : "#f59e0b" }}>
-                <span style={{ animation: "pulse 1.5s infinite" }}>●</span>{status}
+          )}
+
+          {/* ─── Hero ─── */}
+          {heroItem && <div style={{ marginBottom: "32px" }}><HeroCard item={heroItem} onClick={setSelected} /></div>}
+
+          {/* ─── Section: カテゴリ別ニュース ─── */}
+          {nonYtItems.length > 0 && (
+            <div style={{ marginBottom: "48px" }}>
+              <h2 style={{ fontSize: "16px", fontWeight: "700", color: "#1A1A1A", marginBottom: "20px", display: "flex", alignItems: "center", gap: "8px" }}>
+                <span style={{ background: "#6366f1", color: "#fff", width: "4px", height: "20px", borderRadius: "2px", display: "inline-block" }} />
+                Hacker News
+              </h2>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: "16px" }}>
+                {nonYtItems.slice(0, 6).map((item, i) => <NewsCard key={item.id} item={item} onClick={setSelected} index={i} />)}
               </div>
-              <div style={{ color: "#374151", fontSize: "10px", marginTop: "3px" }}>次回更新: {nextUpdate}秒後</div>
             </div>
-          </div>
-        </div>
+          )}
 
-        {/* Main tabs */}
-        <div style={{ display: "flex", gap: "0", borderBottom: "1px solid #1f2937", background: "#080a10" }}>
-          <button onClick={() => setMainTab("news")} style={{
-            background: mainTab === "news" ? "#0f1117" : "transparent",
-            color: mainTab === "news" ? "#34d399" : "#4b5563",
-            border: "none", borderBottom: mainTab === "news" ? "2px solid #34d399" : "2px solid transparent",
-            padding: "10px 24px", fontSize: "13px", fontFamily: "monospace", fontWeight: "700",
-            cursor: "pointer", transition: "all 0.2s",
-          }}>📡 ニュース</button>
-          <button onClick={() => setMainTab("transcript")} style={{
-            background: mainTab === "transcript" ? "#0f1117" : "transparent",
-            color: mainTab === "transcript" ? "#34d399" : "#4b5563",
-            border: "none", borderBottom: mainTab === "transcript" ? "2px solid #34d399" : "2px solid transparent",
-            padding: "10px 24px", fontSize: "13px", fontFamily: "monospace", fontWeight: "700",
-            cursor: "pointer", transition: "all 0.2s",
-          }}>🎬 YouTube字幕</button>
-        </div>
-
-        {mainTab === "news" && <>
-        <Ticker news={news} />
-
-        {/* Source badges */}
-        <div style={{ display: "flex", gap: "8px", padding: "10px 24px", borderBottom: "1px solid #111827", background: "#080a10", overflowX: "auto" }}>
-          {YT_QUERIES.map(yt => (
-            <span key={yt.query} style={{ color: "#ff6666", background: "#ff000010", border: "1px solid #ff000030", borderRadius: "4px", padding: "2px 8px", fontSize: "10px", fontFamily: "monospace", whiteSpace: "nowrap" }}>▶ {yt.query}</span>
-          ))}
-          {lastUpdate && <span style={{ marginLeft: "auto", color: "#374151", fontSize: "10px", whiteSpace: "nowrap", alignSelf: "center" }}>更新: {lastUpdate.toLocaleTimeString("ja-JP")}</span>}
-        </div>
-
-        {/* Filter */}
-        <div style={{ display: "flex", gap: "8px", padding: "12px 24px", overflowX: "auto" }}>
-          {CATEGORIES.map(cat => (
-            <button key={cat} onClick={() => setFilter(cat)} style={{
-              background: filter === cat ? "#34d399" : "transparent",
-              color: filter === cat ? "#000" : "#6b7280",
-              border: `1px solid ${filter === cat ? "#34d399" : "#1f2937"}`,
-              borderRadius: "4px", padding: "4px 14px", fontSize: "12px",
-              cursor: "pointer", fontFamily: "monospace", whiteSpace: "nowrap", transition: "all 0.2s",
-            }}>{cat}</button>
-          ))}
-          <span style={{ marginLeft: "auto", color: "#374151", fontSize: "11px", alignSelf: "center" }}>{filtered.length}件</span>
-        </div>
-
-        {/* Loading skeleton */}
-        {isLoading && (
-          <div style={{ padding: "0 24px", display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))", gap: "12px" }}>
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} style={{ background: "#0f1117", border: "1px solid #1f2937", borderRadius: "8px", padding: "16px" }}>
-                <Shimmer lines={4} />
+          {/* ─── Section: YouTube動画 ─── */}
+          {ytItems.length > 0 && (
+            <div style={{ marginBottom: "48px" }}>
+              <h2 style={{ fontSize: "16px", fontWeight: "700", color: "#1A1A1A", marginBottom: "20px", display: "flex", alignItems: "center", gap: "8px" }}>
+                <span style={{ background: "#ef4444", color: "#fff", width: "4px", height: "20px", borderRadius: "2px", display: "inline-block" }} />
+                YouTube動画
+              </h2>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: "16px" }}>
+                {ytItems.map((item, i) => <NewsCard key={item.id} item={item} onClick={setSelected} index={i} />)}
               </div>
-            ))}
-          </div>
-        )}
-
-        {/* News grid */}
-        {news.length > 0 && (
-          <div style={{ padding: "0 24px 20px", display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))", gap: "12px" }}>
-            {filtered.map(item => (
-              <NewsCard key={item.id} item={item} isNew={newIds.includes(item.id)} onClick={setSelected} />
-            ))}
-          </div>
-        )}
-
-        {/* note articles */}
-        {noteArticles.length > 0 && (
-          <div style={{ padding: "0 24px 40px" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
-              <span style={{ color: "#41c9b4", fontSize: "13px", fontFamily: "monospace", fontWeight: "700" }}>📝 note AI記事</span>
-              <span style={{ color: "#374151", fontSize: "11px", fontFamily: "monospace" }}>{noteArticles.length}件</span>
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              {noteArticles.map(article => (
-                <a key={article.id} href={article.url} target="_blank" rel="noopener noreferrer" style={{
-                  display: "flex", justifyContent: "space-between", alignItems: "center",
-                  background: "#0f1117", border: "1px solid #1f2937", borderRadius: "6px",
-                  padding: "10px 14px", textDecoration: "none", transition: "border-color 0.2s",
-                }}
-                onMouseEnter={e => e.currentTarget.style.borderColor = "#41c9b4"}
-                onMouseLeave={e => e.currentTarget.style.borderColor = "#1f2937"}
-                >
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1, minWidth: 0 }}>
-                    <span style={{ color: "#41c9b4", fontSize: "10px", flexShrink: 0 }}>📝</span>
-                    <span style={{ color: "#e2e8f0", fontSize: "12px", fontFamily: "monospace", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{article.title}</span>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px", flexShrink: 0, marginLeft: "12px" }}>
-                    <span style={{ color: "#4b5563", fontSize: "10px", fontFamily: "monospace" }}>{article.publishedAt ? new Date(article.publishedAt).toLocaleDateString("ja-JP") : ""}</span>
-                    <span style={{ color: "#41c9b4", fontSize: "10px", fontFamily: "monospace" }}>→</span>
-                  </div>
-                </a>
-              ))}
+          )}
+
+          {/* ─── LP Banner ─── */}
+          <a href="https://totonoeru-lp.vercel.app/" target="_blank" rel="noopener noreferrer" style={{
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            background: "linear-gradient(135deg, #1A1A1A, #333)", borderRadius: "14px",
+            padding: "24px 28px", marginBottom: "48px", textDecoration: "none",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.1)", transition: "transform 0.2s",
+          }}
+          onMouseEnter={e => e.currentTarget.style.transform = "translateY(-2px)"}
+          onMouseLeave={e => e.currentTarget.style.transform = "none"}
+          >
+            <div>
+              <p style={{ color: "#10b981", fontSize: "12px", fontWeight: "700", marginBottom: "6px", letterSpacing: "0.05em" }}>ととのえる屋</p>
+              <p style={{ color: "#fff", fontSize: "16px", fontWeight: "700", lineHeight: "1.6" }}>AIについて学びたい方はコチラへ</p>
+              <p style={{ color: "#aaa", fontSize: "12px", marginTop: "4px" }}>暮らしとAIをつなぐ、やさしいガイド</p>
             </div>
-          </div>
-        )}
+            <span style={{ color: "#10b981", fontSize: "24px", fontWeight: "700", flexShrink: 0, marginLeft: "20px" }}>→</span>
+          </a>
 
-        </>}
+          {/* ─── Section: note記事 ─── */}
+          {noteArticles.length > 0 && (() => {
+            const noteCategories = ["全て", ...new Set(noteArticles.map(a => a.category))];
+            const filteredNotes = noteFilter === "全て" ? noteArticles : noteArticles.filter(a => a.category === noteFilter);
+            return (
+            <div>
+              <h2 style={{ fontSize: "16px", fontWeight: "700", color: "#1A1A1A", marginBottom: "16px", display: "flex", alignItems: "center", gap: "8px" }}>
+                <span style={{ background: "#10b981", color: "#fff", width: "4px", height: "20px", borderRadius: "2px", display: "inline-block" }} />
+                note 記事
+              </h2>
+              <div style={{ display: "flex", gap: "8px", marginBottom: "16px", flexWrap: "wrap" }}>
+                {noteCategories.map(cat => (
+                  <button key={cat} onClick={() => setNoteFilter(cat)} style={{
+                    background: noteFilter === cat ? "#1A1A1A" : "#FFFFFF",
+                    color: noteFilter === cat ? "#fff" : "#888",
+                    border: noteFilter === cat ? "none" : "1px solid #e8e0d4",
+                    borderRadius: "8px", padding: "5px 16px", fontSize: "12px", fontWeight: "600",
+                    cursor: "pointer", transition: "all 0.2s",
+                  }}>{cat}</button>
+                ))}
+                <span style={{ color: "#bbb", fontSize: "12px", marginLeft: "auto", alignSelf: "center" }}>{filteredNotes.length}件</span>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                {filteredNotes.map((article, i) => (
+                  <a key={article.id} href={article.url} target="_blank" rel="noopener noreferrer" style={{
+                    display: "flex", justifyContent: "space-between", alignItems: "center",
+                    background: "#FFFFFF", borderRadius: "10px", padding: "14px 20px",
+                    boxShadow: "0 1px 4px rgba(0,0,0,0.03)", transition: "all 0.2s",
+                    animation: `fadeIn 0.4s ease ${i * 0.04}s both`,
+                  }}
+                  onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 4px 16px rgba(0,0,0,0.08)"; e.currentTarget.style.transform = "translateY(-1px)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 1px 4px rgba(0,0,0,0.03)"; e.currentTarget.style.transform = "none"; }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: "12px", flex: 1, minWidth: 0 }}>
+                      <span style={{
+                        background: article.category === "暮らし" ? "#fef3c7" : "#e0f7f1",
+                        color: article.category === "暮らし" ? "#b45309" : "#10b981",
+                        fontSize: "11px", fontWeight: "600", padding: "2px 8px", borderRadius: "4px", flexShrink: 0,
+                      }}>{article.category === "暮らし" ? "🏠 暮らし" : "🤖 AI"}</span>
+                      <span style={{ color: "#1A1A1A", fontSize: "14px", fontWeight: "500", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{article.title}</span>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "12px", flexShrink: 0, marginLeft: "16px" }}>
+                      {article.author && <span style={{ color: "#ccc", fontSize: "11px" }}>{article.author}</span>}
+                      <span style={{ color: "#bbb", fontSize: "12px" }}>{article.publishedAt ? new Date(article.publishedAt).toLocaleDateString("ja-JP") : ""}</span>
+                      <span style={{ color: "#10b981", fontSize: "13px", fontWeight: "600" }}>→</span>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </div>
+            );
+          })()}
+        </main>
+      )}
 
-        {mainTab === "transcript" && <YouTubeTranscriptPanel />}
+      {mainTab === "transcript" && <YouTubeTranscriptPanel />}
 
-        <div style={{ borderTop: "1px solid #111827", padding: "12px 24px", display: "flex", justifyContent: "space-between", color: "#1f2937", fontSize: "11px" }}>
-          <span>AI_RADAR v1.0</span>
-          <span>YouTube × HackerNews × note × Claude AI</span>
-        </div>
-      </div>
+      {/* ─── Footer ─── */}
+      <footer style={{ borderTop: "1px solid #e8e0d4", padding: "16px 32px", display: "flex", justifyContent: "space-between", color: "#ccc", fontSize: "12px" }}>
+        <span>ととのえる屋通信 v1.0</span>
+        <span>AI × 暮らし × ライフハック</span>
+      </footer>
+
       <DetailPanel item={selected} onClose={() => setSelected(null)} />
     </div>
   );
 }
-// Vercel redeploy 2026年 4月  2日 木曜日 15:13:17    

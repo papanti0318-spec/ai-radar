@@ -1,25 +1,39 @@
-// note.com AI関連記事取得（ユーザーRSS経由、APIキー不要）
+// note.com 記事取得（ユーザーRSS経由、APIキー不要）
 
-const NOTE_AI_CREATORS = [
-  "chatgpt_lab",
-  "shi3zblog",
-  "cognitive_01",
-  "aixyz_official",
-  "kotone_ai_note",
-  "claude_sidejob",
-];
+const NOTE_CREATORS = {
+  AI: [
+    "chatgpt_lab",
+    "shi3zblog",
+    "cognitive_01",
+    "aixyz_official",
+    "kotone_ai_note",
+    "claude_sidejob",
+  ],
+  暮らし: [
+    "milke_mama",
+    "shufu_neko",
+    "benri_zyouhouya",
+    "gekidan_ai",
+    "eleven_s_s",
+    "fine_willet9124",
+  ],
+};
 
 export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
-    const limit = parseInt(searchParams.get("limit") || "8");
+    const limit = parseInt(searchParams.get("limit") || "12");
 
-    console.log("[note-articles] Fetching AI articles via RSS, limit:", limit);
+    console.log("[note-articles] Fetching articles via RSS, limit:", limit);
 
-    const feedPromises = NOTE_AI_CREATORS.map(async (user) => {
+    const allCreators = Object.entries(NOTE_CREATORS).flatMap(([category, users]) =>
+      users.map(user => ({ user, category }))
+    );
+
+    const feedPromises = allCreators.map(async ({ user, category }) => {
       try {
         const res = await fetch(`https://note.com/${user}/rss`, {
-          headers: { "User-Agent": "Mozilla/5.0 (compatible; AI_RADAR/1.0)" },
+          headers: { "User-Agent": "Mozilla/5.0 (compatible; TotonoeruNews/1.0)" },
           next: { revalidate: 300 },
         });
 
@@ -31,7 +45,7 @@ export async function GET(req) {
         const xml = await res.text();
         if (!xml || xml.trim().length === 0) return [];
 
-        return parseRssItems(xml);
+        return parseRssItems(xml, category);
       } catch (err) {
         console.error(`[note-articles] RSS fetch failed for ${user}:`, err.message);
         return [];
@@ -41,7 +55,6 @@ export async function GET(req) {
     const results = await Promise.all(feedPromises);
     const allItems = results.flat();
 
-    // 公開日が新しい順にソートして上位を返す
     allItems.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
     const items = allItems.slice(0, limit);
 
@@ -61,7 +74,7 @@ export async function GET(req) {
   }
 }
 
-function parseRssItems(xml) {
+function parseRssItems(xml, category) {
   const items = [];
   const itemRegex = /<item>([\s\S]*?)<\/item>/g;
   let match;
@@ -71,6 +84,7 @@ function parseRssItems(xml) {
     const title = extractTag(block, "title");
     const link = extractTag(block, "link");
     const pubDate = extractTag(block, "pubDate");
+    const creator = extractTag(block, "note:creatorName");
 
     if (!title || !link) continue;
 
@@ -78,7 +92,9 @@ function parseRssItems(xml) {
       id: link,
       title: decodeEntities(title),
       url: link,
+      author: creator ? decodeEntities(creator) : null,
       publishedAt: pubDate || null,
+      category,
     });
   }
 

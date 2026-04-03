@@ -1,12 +1,14 @@
+import "./globals.css";
+
 export const metadata = {
-  title: "AI_RADAR — 世界のAI情報をリアルタイムで",
-  description: "YouTube × HackerNews × Claude AIで世界のAIニュースをリアルタイム日本語翻訳",
+  title: "ととのえる屋通信 — AI・暮らし・ライフハックの最新情報",
+  description: "YouTube × HackerNews × note × Claude AIで世界のAIニュースをリアルタイム日本語翻訳",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="ja">
-      <body style={{ margin: 0, padding: 0, background: "#060810" }}>
+      <body>
         {children}
       </body>
     </html>
