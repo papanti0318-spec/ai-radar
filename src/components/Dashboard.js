@@ -273,25 +273,27 @@ ${sourceField}
             <span style={{ background: catColor+"22", color: catColor, border: `1px solid ${catColor}44`, borderRadius: "4px", padding: "2px 10px", fontSize: "11px", fontFamily: "monospace" }}>{item.category}</span>
             {item.sourceType === "hn" ? (
               <span style={{ color: "#ff6600", background: "#ff660015", border: "1px solid #ff660030", borderRadius: "4px", padding: "2px 8px", fontSize: "11px", fontFamily: "monospace" }}>🟠 Hacker News</span>
+            ) : item.sourceType === "note" ? (
+              <span style={{ color: "#41c9b4", background: "#41c9b415", border: "1px solid #41c9b430", borderRadius: "4px", padding: "2px 8px", fontSize: "11px", fontFamily: "monospace" }}>📝 note</span>
             ) : (
               <span style={{ color: "#ff0000", background: "#ff000015", border: "1px solid #ff000030", borderRadius: "4px", padding: "2px 8px", fontSize: "11px", fontFamily: "monospace" }}>▶ YouTube</span>
             )}
-            {item.score > 100000 && <span style={{ color: "#f97316", fontSize: "11px", animation: "pulse 2s infinite" }}>🔥 人気動画</span>}
+            {item.score > 100000 && <span style={{ color: "#f97316", fontSize: "11px", animation: "pulse 2s infinite" }}>🔥 人気</span>}
           </div>
 
           <div style={{ color: "#f1f5f9", fontSize: "15px", fontWeight: "700", lineHeight: "1.5", fontFamily: "monospace" }}>{item.title}</div>
 
           <div style={{ background: "#0a0f1a", border: "1px solid #1f2937", borderRadius: "8px", padding: "14px 16px", display: "flex", flexDirection: "column", gap: "9px" }}>
             <div style={{ color: "#374151", fontSize: "11px", fontFamily: "monospace" }}>── ソース情報</div>
-            <Row label="メディア" value={item.sourceType === "hn" ? "🟠 Hacker News" : "▶ YouTube"} color={item.sourceType === "hn" ? "#ff6600" : "#ff0000"} />
-            <Row label={item.sourceType === "hn" ? "投稿者" : "チャンネル"} value={item.source} color={item.sourceType === "hn" ? "#ff9944" : "#ff6666"} />
-            <Row label={item.sourceType === "hn" ? "ポイント" : "視聴回数"} value={item.sourceType === "hn" ? `⬆ ${item.score?.toLocaleString()}` : `▶ ${formatViews(item.score)}`} color="#f59e0b" />
+            <Row label="メディア" value={item.sourceType === "hn" ? "🟠 Hacker News" : item.sourceType === "note" ? "📝 note" : "▶ YouTube"} color={item.sourceType === "hn" ? "#ff6600" : item.sourceType === "note" ? "#41c9b4" : "#ff0000"} />
+            <Row label={item.sourceType === "hn" ? "投稿者" : item.sourceType === "note" ? "著者" : "チャンネル"} value={item.source} color={item.sourceType === "hn" ? "#ff9944" : item.sourceType === "note" ? "#41c9b4" : "#ff6666"} />
+            <Row label={item.sourceType === "hn" ? "ポイント" : item.sourceType === "note" ? "スキ" : "視聴回数"} value={item.sourceType === "hn" ? `⬆ ${item.score?.toLocaleString()}` : item.sourceType === "note" ? `♡ ${item.score?.toLocaleString()}` : `▶ ${formatViews(item.score)}`} color="#f59e0b" />
             <Row label="コメント" value={`${item.num_comments?.toLocaleString()} 件`} color="#60a5fa" />
             <Row label="投稿時刻" value={timeLabel(item.created_utc)} color="#9ca3af" />
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <span style={{ color: "#6b7280", fontSize: "12px" }}>{item.sourceType === "hn" ? "元記事" : "元動画"}</span>
-              <a href={item.permalink} target="_blank" rel="noopener noreferrer" style={{ color: item.sourceType === "hn" ? "#ff9944" : "#ff6666", fontSize: "11px", fontFamily: "monospace", textDecoration: "none" }}>
-                {item.sourceType === "hn" ? "HNで開く →" : "YouTubeで開く →"}
+              <span style={{ color: "#6b7280", fontSize: "12px" }}>{item.sourceType === "hn" ? "元記事" : item.sourceType === "note" ? "元記事" : "元動画"}</span>
+              <a href={item.permalink} target="_blank" rel="noopener noreferrer" style={{ color: item.sourceType === "hn" ? "#ff9944" : item.sourceType === "note" ? "#41c9b4" : "#ff6666", fontSize: "11px", fontFamily: "monospace", textDecoration: "none" }}>
+                {item.sourceType === "hn" ? "HNで開く →" : item.sourceType === "note" ? "noteで開く →" : "YouTubeで開く →"}
               </a>
             </div>
           </div>
@@ -392,13 +394,15 @@ function NewsCard({ item, isNew, onClick }) {
           <span style={{ background: catColor+"22", color: catColor, border: `1px solid ${catColor}44`, borderRadius: "4px", padding: "2px 8px", fontSize: "10px", fontFamily: "monospace" }}>{item.category}</span>
           {item.sourceType === "hn" ? (
             <span style={{ color: "#ff6600", background: "#ff660015", border: "1px solid #ff660030", borderRadius: "3px", padding: "2px 6px", fontSize: "10px", fontFamily: "monospace" }}>🟠 HN</span>
+          ) : item.sourceType === "note" ? (
+            <span style={{ color: "#41c9b4", background: "#41c9b415", border: "1px solid #41c9b430", borderRadius: "3px", padding: "2px 6px", fontSize: "10px", fontFamily: "monospace" }}>📝 note</span>
           ) : (
             <span style={{ color: "#ff6666", background: "#ff000015", border: "1px solid #ff000030", borderRadius: "3px", padding: "2px 6px", fontSize: "10px", fontFamily: "monospace" }}>▶ YT</span>
           )}
         </div>
         <div style={{ display: "flex", gap: "6px", alignItems: "center" }}>
           {item.score > 100000 && <span style={{ fontSize: "10px" }}>🔥</span>}
-          <span style={{ color: "#4b5563", fontSize: "10px", fontFamily: "monospace" }}>{item.sourceType === "hn" ? `⬆${item.score}` : `▶${formatViews(item.score)}`}</span>
+          <span style={{ color: "#4b5563", fontSize: "10px", fontFamily: "monospace" }}>{item.sourceType === "hn" ? `⬆${item.score}` : item.sourceType === "note" ? `♡${item.score}` : `▶${formatViews(item.score)}`}</span>
           <span style={{ color: "#374151", fontSize: "10px", fontFamily: "monospace" }}>{timeLabel(item.created_utc)}</span>
         </div>
       </div>
@@ -655,11 +659,12 @@ export default function Dashboard() {
 
   async function fetchAll() {
     setStatus("データ取得中...");
-    const [ytResults, hnResults] = await Promise.all([
+    const [ytResults, hnResults, noteResults] = await Promise.all([
       fetchYouTube(),
       fetchHackerNews(),
+      fetchNoteArticles(),
     ]);
-    const allResults = [...ytResults, ...hnResults];
+    const allResults = [...ytResults, ...hnResults, ...noteResults];
     if (allResults.length > 0) {
       setUsingFallback(false);
       setStatus("AI翻訳中...");
@@ -739,6 +744,28 @@ export default function Dashboard() {
     }
   }
 
+  async function fetchNoteArticles() {
+    try {
+      const res = await fetch("/api/note-articles?limit=8");
+      const data = await res.json();
+      return (data?.items || []).map((item) => ({
+        id: `note-${item.id}`,
+        title: item.title,
+        source: "note",
+        author: item.author,
+        score: item.likeCount,
+        num_comments: item.commentCount,
+        created_utc: Math.floor(new Date(item.publishedAt).getTime() / 1000),
+        permalink: item.url,
+        category: classifyCategory(item.title),
+        titleJa: item.title,
+        sourceType: "note",
+      }));
+    } catch {
+      return [];
+    }
+  }
+
   async function batchTranslate(posts) {
     try {
       const lines = posts.map((p, i) => `${i}: ${p.title}`).join("\n");
@@ -789,7 +816,7 @@ export default function Dashboard() {
             <div>
               <div style={{ fontSize: "20px", fontWeight: "800", letterSpacing: "0.15em", color: "#f0fdf4" }}>▶ AI_RADAR</div>
               <div style={{ color: "#374151", fontSize: "11px", marginTop: "2px" }}>
-                YouTube × HackerNews × Claude AI — リアルタイム翻訳
+                YouTube × HackerNews × note × Claude AI — リアルタイム翻訳
                 {usingFallback && <span style={{ color: "#f59e0b", marginLeft: "8px" }}>[AI生成モード]</span>}
               </div>
             </div>
@@ -870,8 +897,8 @@ export default function Dashboard() {
         {mainTab === "transcript" && <YouTubeTranscriptPanel />}
 
         <div style={{ borderTop: "1px solid #111827", padding: "12px 24px", display: "flex", justifyContent: "space-between", color: "#1f2937", fontSize: "11px" }}>
-          <span>AI_RADAR v0.8</span>
-          <span>YouTube × HackerNews × Claude AI</span>
+          <span>AI_RADAR v1.0</span>
+          <span>YouTube × HackerNews × note × Claude AI</span>
         </div>
       </div>
       <DetailPanel item={selected} onClose={() => setSelected(null)} />
