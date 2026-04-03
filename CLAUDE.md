@@ -13,8 +13,9 @@ Next.js製のAIニュースダッシュボード。
 
 ## 現在の状況
 
-- v0.9、YouTube + HackerNews の2ソース + YouTube字幕タブ
+- v1.0、YouTube + HackerNews + note の3ソース + YouTube字幕タブ
 - YouTube API取得 → HackerNews API取得 → スコア順マージ → Claude翻訳
+- note記事はリンクリストとして別セクションに表示（クリックでnote.comに遷移）
 - 両方取得失敗時はClaude AIでニュース生成（フォールバック）
 - YouTube字幕タブ: Supadata APIで字幕取得 → Claude AIで日本語整形
 - Reddit APIは削除済み（Vercelからブロックされていたため）
@@ -23,13 +24,16 @@ Next.js製のAIニュースダッシュボード。
 
 1. YouTube: `YT_QUERIES`（5カテゴリ）で検索、最大12件
 2. HackerNews: topstories から8件取得（APIキー不要）
-3. マージしてスコア順にソート
-4. Claude APIでタイトル一括翻訳
-5. 詳細パネル: Claude APIで要約・分析・コメント生成
+3. note: AI系クリエイター6名のユーザーRSSから記事取得（APIキー不要）
+4. YouTube + HNをマージしてスコア順にソート
+5. Claude APIでタイトル一括翻訳
+6. note記事はニュースグリッドの下にリンクリストとして表示
+7. 詳細パネル: Claude APIで要約・分析・コメント生成
 
 ## 構成（追加）
 
 - YouTube字幕API：`src/app/api/youtube-transcript/route.js`（Supadata経由）
+- note記事API：`src/app/api/note-articles/route.js`（ユーザーRSS経由）
 
 ## 環境変数（.env.local）
 
@@ -58,3 +62,24 @@ Next.js製のAIニュースダッシュボード。
 - 全体を`try-catch`で囲む
 - ログには `[api名]` タグをつける（例：`[youtube-transcript]`）
 - JSONは`try-catch`でパースする
+- SDKよりdirect fetch（`fetch()`）のほうがエラーが把握しやすい
+
+## 外部APIのブロック対策
+
+- VercelのIPは一部サービス（note検索API、Reddit等）にブロックされる
+- 対策：公式検索APIではなくRSSを使う
+- note.comの場合：ハッシュタグRSSは存在しない。ユーザーRSS（`note.com/{user}/rss`）を束ねる方式が有効
+- ローカルでは動くがVercelで403になるケースがあるため、デプロイ後に必ず本番で動作確認する
+
+## Vercel固有の注意点
+
+- 環境変数を追加・変更したら必ずRedeployする（設定変更だけでは反映されない）
+- Function Logs（ダッシュボード → Logs）でエラー原因を確認できる
+- `max_tokens`が小さいとClaude APIのJSONレスポンスが途中で切れる（4096推奨）
+- Deployment Protectionが有効だとサイト全体が401になる。公開サイトはOFFにする
+
+## 開発フロー
+
+- ローカルで動作確認 → pushしてデプロイの順番を守る
+- エラー修正は1つずつ。一気に複数変更しない
+- デプロイ後は本番URLでAPI・フロント両方の動作を確認する
