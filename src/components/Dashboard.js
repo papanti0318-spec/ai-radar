@@ -644,6 +644,7 @@ export default function Dashboard() {
   const [lastUpdate, setLastUpdate] = useState(null);
   const [usingFallback, setUsingFallback] = useState(false);
   const [mainTab, setMainTab] = useState("news");
+  const [noteArticles, setNoteArticles] = useState([]);
 
   useEffect(() => {
     const t = setInterval(() => {
@@ -664,7 +665,8 @@ export default function Dashboard() {
       fetchHackerNews(),
       fetchNoteArticles(),
     ]);
-    const allResults = [...ytResults, ...hnResults, ...noteResults];
+    setNoteArticles(noteResults);
+    const allResults = [...ytResults, ...hnResults];
     if (allResults.length > 0) {
       setUsingFallback(false);
       setStatus("AI翻訳中...");
@@ -751,14 +753,8 @@ export default function Dashboard() {
       return (data?.items || []).map((item) => ({
         id: `note-${item.id}`,
         title: item.title,
-        source: "note",
-        author: item.author,
-        score: item.likeCount,
-        num_comments: item.commentCount,
-        created_utc: Math.floor(new Date(item.publishedAt).getTime() / 1000),
-        permalink: item.url,
-        category: classifyCategory(item.title),
-        titleJa: item.title,
+        url: item.url,
+        publishedAt: item.publishedAt,
         sourceType: "note",
       }));
     } catch {
@@ -885,10 +881,41 @@ export default function Dashboard() {
 
         {/* News grid */}
         {news.length > 0 && (
-          <div style={{ padding: "0 24px 40px", display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))", gap: "12px" }}>
+          <div style={{ padding: "0 24px 20px", display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(280px,1fr))", gap: "12px" }}>
             {filtered.map(item => (
               <NewsCard key={item.id} item={item} isNew={newIds.includes(item.id)} onClick={setSelected} />
             ))}
+          </div>
+        )}
+
+        {/* note articles */}
+        {noteArticles.length > 0 && (
+          <div style={{ padding: "0 24px 40px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}>
+              <span style={{ color: "#41c9b4", fontSize: "13px", fontFamily: "monospace", fontWeight: "700" }}>📝 note AI記事</span>
+              <span style={{ color: "#374151", fontSize: "11px", fontFamily: "monospace" }}>{noteArticles.length}件</span>
+            </div>
+            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+              {noteArticles.map(article => (
+                <a key={article.id} href={article.url} target="_blank" rel="noopener noreferrer" style={{
+                  display: "flex", justifyContent: "space-between", alignItems: "center",
+                  background: "#0f1117", border: "1px solid #1f2937", borderRadius: "6px",
+                  padding: "10px 14px", textDecoration: "none", transition: "border-color 0.2s",
+                }}
+                onMouseEnter={e => e.currentTarget.style.borderColor = "#41c9b4"}
+                onMouseLeave={e => e.currentTarget.style.borderColor = "#1f2937"}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1, minWidth: 0 }}>
+                    <span style={{ color: "#41c9b4", fontSize: "10px", flexShrink: 0 }}>📝</span>
+                    <span style={{ color: "#e2e8f0", fontSize: "12px", fontFamily: "monospace", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{article.title}</span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px", flexShrink: 0, marginLeft: "12px" }}>
+                    <span style={{ color: "#4b5563", fontSize: "10px", fontFamily: "monospace" }}>{article.publishedAt ? new Date(article.publishedAt).toLocaleDateString("ja-JP") : ""}</span>
+                    <span style={{ color: "#41c9b4", fontSize: "10px", fontFamily: "monospace" }}>→</span>
+                  </div>
+                </a>
+              ))}
+            </div>
           </div>
         )}
 

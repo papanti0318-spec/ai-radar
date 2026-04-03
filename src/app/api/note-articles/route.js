@@ -42,12 +42,7 @@ export async function GET(req) {
         id: String(note.id),
         title: note.name || "(無題)",
         url: `https://note.com/${note.user?.urlname}/n/${note.key}`,
-        author: note.user?.nickname || note.user?.name || "unknown",
-        excerpt: (note.highlight || "").replace(/<\/?em>/g, "").slice(0, 200),
-        likeCount: note.like_count || 0,
-        commentCount: note.comment_count || 0,
         publishedAt: note.publish_at,
-        eyecatch: note.eyecatch || note.sp_eyecatch || null,
       }));
 
     console.log("[note-articles] Returning", items.length, "articles");
