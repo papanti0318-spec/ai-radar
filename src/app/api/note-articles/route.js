@@ -1,51 +1,56 @@
-// note.com AI関連記事取得（note検索API経由、APIキー不要）
+// note.com AI関連記事取得（ユーザーRSS経由、APIキー不要）
+
+const NOTE_AI_CREATORS = [
+  "chatgpt_lab",
+  "shi3zblog",
+  "cognitive_01",
+  "aixyz_official",
+  "kotone_ai_note",
+  "claude_sidejob",
+];
 
 export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
     const limit = parseInt(searchParams.get("limit") || "8");
 
-    console.log("[note-articles] Fetching AI articles, limit:", limit);
+    console.log("[note-articles] Fetching AI articles via RSS, limit:", limit);
 
-    const apiUrl = `https://note.com/api/v3/searches?q=AI&size=${limit}&start=0&sort=new&context=note`;
-    const res = await fetch(apiUrl, {
-      headers: { "User-Agent": "Mozilla/5.0 (compatible; AI_RADAR/1.0)" },
-      next: { revalidate: 300 },
+    const feedPromises = NOTE_AI_CREATORS.map(async (user) => {
+      try {
+        const res = await fetch(`https://note.com/${user}/rss`, {
+          headers: { "User-Agent": "Mozilla/5.0 (compatible; AI_RADAR/1.0)" },
+          next: { revalidate: 300 },
+        });
+
+        if (!res.ok) {
+          console.error(`[note-articles] RSS for ${user} returned ${res.status}`);
+          return [];
+        }
+
+        const xml = await res.text();
+        if (!xml || xml.trim().length === 0) return [];
+
+        return parseRssItems(xml);
+      } catch (err) {
+        console.error(`[note-articles] RSS fetch failed for ${user}:`, err.message);
+        return [];
+      }
     });
 
-    if (!res.ok) {
-      const errorBody = await res.text();
-      console.error(`[note-articles] note.com API returned ${res.status}: ${errorBody}`);
-      return Response.json(
-        { error: `note.com API error (${res.status})`, items: [] },
-        { status: 500 }
-      );
-    }
+    const results = await Promise.all(feedPromises);
+    const allItems = results.flat();
 
-    let data;
-    try {
-      data = await res.json();
-    } catch (parseErr) {
-      console.error("[note-articles] JSON parse failed:", parseErr.message);
-      return Response.json({ error: "note.com response parse failed", items: [] }, { status: 500 });
-    }
+    // 公開日が新しい順にソートして上位を返す
+    allItems.sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
+    const items = allItems.slice(0, limit);
 
-    const notes = data?.data?.notes?.contents;
-    if (!notes || !Array.isArray(notes) || notes.length === 0) {
-      console.log("[note-articles] No articles found");
+    if (items.length === 0) {
+      console.log("[note-articles] No articles found from RSS feeds");
       return Response.json({ items: [] });
     }
 
-    const items = notes
-      .filter((note) => note.type === "TextNote")
-      .map((note) => ({
-        id: String(note.id),
-        title: note.name || "(無題)",
-        url: `https://note.com/${note.user?.urlname}/n/${note.key}`,
-        publishedAt: note.publish_at,
-      }));
-
-    console.log("[note-articles] Returning", items.length, "articles");
+    console.log("[note-articles] Returning", items.length, "articles from RSS");
     return Response.json({ items });
   } catch (e) {
     console.error("[note-articles] Unexpected error:", e.name, e.message, e.stack);
@@ -54,4 +59,49 @@ export async function GET(req) {
       { status: 500 }
     );
   }
+}
+
+function parseRssItems(xml) {
+  const items = [];
+  const itemRegex = /<item>([\s\S]*?)<\/item>/g;
+  let match;
+
+  while ((match = itemRegex.exec(xml)) !== null) {
+    const block = match[1];
+    const title = extractTag(block, "title");
+    const link = extractTag(block, "link");
+    const pubDate = extractTag(block, "pubDate");
+
+    if (!title || !link) continue;
+
+    items.push({
+      id: link,
+      title: decodeEntities(title),
+      url: link,
+      publishedAt: pubDate || null,
+    });
+  }
+
+  return items;
+}
+
+function extractTag(xml, tagName) {
+  const cdataRegex = new RegExp(`<${tagName}[^>]*><!\\[CDATA\\[([\\s\\S]*?)\\]\\]><\\/${tagName}>`);
+  const cdataMatch = xml.match(cdataRegex);
+  if (cdataMatch) return cdataMatch[1].trim();
+
+  const regex = new RegExp(`<${tagName}[^>]*>([\\s\\S]*?)<\\/${tagName}>`);
+  const m = xml.match(regex);
+  return m ? m[1].trim() : null;
+}
+
+function decodeEntities(str) {
+  return str
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
+    .replace(/&#(\d+);/g, (_, dec) => String.fromCharCode(parseInt(dec)));
 }
