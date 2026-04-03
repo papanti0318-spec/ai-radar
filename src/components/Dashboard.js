@@ -451,49 +451,53 @@ function YouTubeTranscriptPanel() {
       const fullText = transcriptData.transcript;
       setRawTranscript(fullText);
 
-      // Step 1: 要約＋詳細（字幕全文を最大30,000文字送る、出力は短い）
-      setStep("AI要約を生成中...");
-      const summaryInput = fullText.slice(0, 30000);
-      const summaryText = await callClaude([{ role: "user", content:
-        `以下のYouTube動画の字幕テキスト全文を分析して、JSONのみ返してください（前置き不要）。
-
-字幕テキスト（${fullText.length.toLocaleString()}文字）:
-${summaryInput}
-
-以下のJSON形式で返してください:
-{"summary":"3行まとめ（各行は改行で区切る、各行40文字以内）","detail":"詳細記事（ニュース記事のように整形、500〜800文字程度、動画全体の内容を網羅）"}`
-      }], 2048);
-
-      let parsed;
-      try {
-        parsed = JSON.parse(summaryText);
-      } catch (parseErr) {
-        console.error("Summary JSON parse failed. Raw:", summaryText);
-        throw new Error("要約の生成に失敗しました。再試行してください。");
-      }
-
-      // Step 2: 整形全文（5,000文字ずつチャンク分割して順番に処理）
+      // Step 1: 全文を日本語に翻訳（5,000文字ずつチャンク分割）
       const CHUNK_SIZE = 5000;
       const chunks = [];
       for (let i = 0; i < fullText.length; i += CHUNK_SIZE) {
         chunks.push(fullText.slice(i, i + CHUNK_SIZE));
       }
 
-      let formattedParts = [];
+      let translatedParts = [];
       for (let i = 0; i < chunks.length; i++) {
-        setStep(`全文整形中... (${i + 1}/${chunks.length})`);
+        setStep(`日本語に翻訳中... (${i + 1}/${chunks.length})`);
         const chunkText = await callClaude([{ role: "user", content:
-          `以下のYouTube字幕テキスト（パート${i + 1}/${chunks.length}）を読みやすい日本語に整形してください。
-句読点・改行を適切に追加し、自然な文章にしてください。
+          `以下のYouTube字幕テキスト（パート${i + 1}/${chunks.length}）を日本語に翻訳してください。
+自然な日本語で、句読点・改行を適切に追加して読みやすくしてください。
+既に日本語の部分はそのまま残してください。
 JSONではなくプレーンテキストのみ返してください（前置き・説明不要）。
 
 字幕テキスト:
 ${chunks[i]}`
         }], 4096);
-        formattedParts.push(chunkText);
+        translatedParts.push(chunkText);
       }
 
-      parsed.fullText = formattedParts.join("\n\n");
+      const translatedFull = translatedParts.join("\n\n");
+
+      // Step 2: 翻訳済み全文から要約＋記事を生成
+      setStep("記事を生成中...");
+      const articleInput = translatedFull.slice(0, 30000);
+      const articleText = await callClaude([{ role: "user", content:
+        `以下はYouTube動画の字幕を日本語に翻訳したテキストです。これを元に記事を作成してください。
+JSONのみ返してください（前置き不要）。
+
+翻訳済みテキスト（${translatedFull.length.toLocaleString()}文字）:
+${articleInput}
+
+以下のJSON形式で返してください:
+{"summary":"3行まとめ（各行は改行で区切る、各行40文字以内）","article":"ニュース記事形式の本文（見出し・段落分けして1500〜3000文字程度、動画の内容を漏れなくカバー）"}`
+      }], 4096);
+
+      let parsed;
+      try {
+        parsed = JSON.parse(articleText);
+      } catch (parseErr) {
+        console.error("Article JSON parse failed. Raw:", articleText);
+        throw new Error("記事の生成に失敗しました。再試行してください。");
+      }
+
+      parsed.fullText = translatedFull;
       setResult(parsed);
     } catch (e) {
       console.error("YouTube transcript error:", e);
@@ -572,10 +576,10 @@ ${chunks[i]}`
             ))}
           </div>
 
-          {/* 詳細 */}
+          {/* 記事 */}
           <div style={{ background: "linear-gradient(135deg,#0a1628,#0d1f2d)", border: "1px solid #1e3a5f", borderRadius: "8px", padding: "16px" }}>
-            <div style={{ color: "#60a5fa", fontSize: "12px", fontFamily: "monospace", marginBottom: "12px" }}>② 詳細</div>
-            <div style={{ color: "#bfdbfe", fontSize: "13px", lineHeight: "2.0", fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{result.detail}</div>
+            <div style={{ color: "#60a5fa", fontSize: "12px", fontFamily: "monospace", marginBottom: "12px" }}>② 記事</div>
+            <div style={{ color: "#bfdbfe", fontSize: "13px", lineHeight: "2.0", fontFamily: "monospace", whiteSpace: "pre-wrap" }}>{result.article}</div>
           </div>
 
           {/* 全文トグル */}
@@ -588,7 +592,7 @@ ${chunks[i]}`
                 cursor: "pointer", color: "#60a5fa", fontSize: "12px", fontFamily: "monospace",
               }}
             >
-              <span>③ 全文（整形済み）</span>
+              <span>③ 全文（日本語翻訳）</span>
               <span style={{ color: "#4b5563", fontSize: "11px" }}>{showFull ? "▲ 閉じる" : "▼ 開く"}</span>
             </button>
             {showFull && (
