@@ -1,6 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import HeroCard from "./Hero";
+import NewsCard from "./NewsCard";
+import CategoryPill from "./CategoryPill";
+import SourceBadge from "./SourceBadge";
+import { CATEGORY_COLORS, SOURCE_BADGE, FALLBACK_NEWS, classifyCategory, timeLabel, formatViews } from "../lib/helpers";
 
 const CATEGORIES = ["全て", "研究", "ツール", "ビジネス", "モデル"];
 
@@ -11,52 +16,6 @@ const YT_QUERIES = [
   { query: "GPT Claude Gemini AI model release", category: "モデル" },
   { query: "artificial intelligence news latest", category: "研究" },
 ];
-
-const CATEGORY_COLORS = {
-  研究: "#6366f1", ツール: "#10b981", ビジネス: "#f59e0b", モデル: "#ec4899",
-};
-
-const SOURCE_BADGE = {
-  hn: { label: "Hacker News", icon: "🟠", color: "#ff6600", bg: "#fff3e0" },
-  yt: { label: "YouTube", icon: "▶", color: "#ff0000", bg: "#ffebee" },
-  note: { label: "note", icon: "📝", color: "#41c9b4", bg: "#e0f7f1" },
-};
-
-const FALLBACK_NEWS = [
-  { id: "f1", title: "GPT-4o gets major update with better reasoning", titleJa: "GPT-4oが推論能力を大幅強化", source: "OpenAI Official", author: "OpenAI Official", score: 342000, num_comments: 287, created_utc: Math.floor(Date.now()/1000)-1800, permalink: "https://www.youtube.com/results?search_query=GPT-4o", category: "モデル", sourceType: "yt" },
-  { id: "f2", title: "Llama 3.3 running locally is absolutely insane performance", titleJa: "Llama 3.3のローカル動作が衝撃的な性能", source: "Two Minute Papers", author: "Two Minute Papers", score: 289000, num_comments: 412, created_utc: Math.floor(Date.now()/1000)-3200, permalink: "https://www.youtube.com/results?search_query=Llama+local", category: "ツール", sourceType: "yt" },
-  { id: "f3", title: "New paper: LLMs autonomously write and verify mathematical proofs", titleJa: "新論文：LLMが数学的証明を自律的に生成・検証", source: "Yannic Kilcher", author: "Yannic Kilcher", score: 210400, num_comments: 183, created_utc: Math.floor(Date.now()/1000)-5400, permalink: "https://www.youtube.com/results?search_query=LLM+math+proof", category: "研究", sourceType: "yt" },
-  { id: "f4", title: "Claude 3.5 Sonnet vs GPT-4o: Full Benchmark Comparison", titleJa: "Claude 3.5 Sonnet vs GPT-4o 完全ベンチマーク比較", source: "AI Explained", author: "AI Explained", score: 187600, num_comments: 234, created_utc: Math.floor(Date.now()/1000)-7200, permalink: "https://www.youtube.com/results?search_query=Claude+GPT+benchmark", category: "モデル", sourceType: "yt" },
-  { id: "f5", title: "AI replacing jobs: 40% of tasks automatable by 2026", titleJa: "AI自動化で40%の業務が代替可能との新研究", source: "Bloomberg Technology", author: "Bloomberg Technology", score: 165400, num_comments: 891, created_utc: Math.floor(Date.now()/1000)-9000, permalink: "https://www.youtube.com/results?search_query=AI+jobs+automation", category: "ビジネス", sourceType: "yt" },
-  { id: "f6", title: "Build AI Agent from Scratch: Complete Tutorial 2025", titleJa: "AIエージェントをゼロから構築：完全チュートリアル2025", source: "freeCodeCamp", author: "freeCodeCamp", score: 143200, num_comments: 167, created_utc: Math.floor(Date.now()/1000)-10800, permalink: "https://www.youtube.com/results?search_query=AI+agent+tutorial", category: "ツール", sourceType: "yt" },
-  { id: "f7", title: "Anthropic releases new AI safety research: Constitutional AI v2", titleJa: "AnthropicがConstitutional AI v2安全性研究を公開", source: "Lex Fridman", author: "Lex Fridman", score: 128700, num_comments: 145, created_utc: Math.floor(Date.now()/1000)-12600, permalink: "https://www.youtube.com/results?search_query=Anthropic+AI+safety", category: "研究", sourceType: "yt" },
-  { id: "f8", title: "OpenAI valuation hits $300B: What it means for the industry", titleJa: "OpenAIの評価額3000億ドル突破：業界への影響を解説", source: "CNBC", author: "CNBC", score: 98700, num_comments: 543, created_utc: Math.floor(Date.now()/1000)-14400, permalink: "https://www.youtube.com/results?search_query=OpenAI+valuation", category: "ビジネス", sourceType: "yt" },
-];
-
-function classifyCategory(title) {
-  const t = title.toLowerCase();
-  const toolWords = ["tool", "tutorial", "framework", "library", "sdk", "api", "app", "build", "code", "dev", "github", "open source", "rust", "python", "launch", "release", "docker", "cli", "plugin", "extension", "editor", "ide"];
-  const bizWords = ["business", "startup", "funding", "valuation", "billion", "million", "revenue", "company", "market", "invest", "ipo", "acquisition", "layoff", "hire", "ceo", "enterprise", "regulation", "policy", "law", "ban", "government", "gdpr", "copyright"];
-  const modelWords = ["gpt", "claude", "gemini", "llama", "mistral", "model", "llm", "chatgpt", "copilot", "benchmark", "parameter", "fine-tun", "training", "inference", "token", "transformer", "diffusion", "stable diffusion", "midjourney", "sora", "openai", "anthropic", "google ai", "meta ai"];
-  if (modelWords.some(w => t.includes(w))) return "モデル";
-  if (bizWords.some(w => t.includes(w))) return "ビジネス";
-  if (toolWords.some(w => t.includes(w))) return "ツール";
-  return "研究";
-}
-
-function timeLabel(utc) {
-  const diff = Math.floor(Date.now() / 1000) - utc;
-  if (diff < 60) return `${diff}秒前`;
-  if (diff < 3600) return `${Math.floor(diff / 60)}分前`;
-  if (diff < 86400) return `${Math.floor(diff / 3600)}時間前`;
-  return `${Math.floor(diff / 86400)}日前`;
-}
-
-function formatViews(n) {
-  if (n >= 1000000) return `${(n / 1000000).toFixed(1)}M`;
-  if (n >= 1000) return `${(n / 1000).toFixed(0)}K`;
-  return String(n);
-}
 
 async function callClaude(messages, maxTokens = 1000) {
   const res = await fetch("/api/claude", {
@@ -92,29 +51,6 @@ function Shimmer({ lines = 3 }) {
         }} />
       ))}
     </div>
-  );
-}
-
-/* ─── Source Badge ─── */
-function SourceBadge({ type }) {
-  const s = SOURCE_BADGE[type] || SOURCE_BADGE.yt;
-  return (
-    <span style={{
-      display: "inline-flex", alignItems: "center", gap: "4px",
-      background: s.bg, color: s.color, fontSize: "11px", fontWeight: "600",
-      padding: "2px 8px", borderRadius: "4px", whiteSpace: "nowrap",
-    }}>{s.icon} {s.label}</span>
-  );
-}
-
-/* ─── Category Pill ─── */
-function CategoryPill({ category }) {
-  const c = CATEGORY_COLORS[category] || "#888";
-  return (
-    <span style={{
-      background: c + "14", color: c, fontSize: "11px", fontWeight: "600",
-      padding: "2px 10px", borderRadius: "4px", border: `1px solid ${c}30`,
-    }}>{category}</span>
   );
 }
 
@@ -306,94 +242,6 @@ function DetailPanel({ item, onClose }) {
               )}
             </div>
           )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ─── Hero Card (top story) ─── */
-function HeroCard({ item, onClick }) {
-  const [hover, setHover] = useState(false);
-  if (!item) return null;
-  const badge = SOURCE_BADGE[item.sourceType] || SOURCE_BADGE.yt;
-  return (
-    <div onClick={() => onClick(item)} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} style={{
-      background: "#FFFFFF", borderRadius: "16px", padding: "32px",
-      boxShadow: hover ? "0 12px 40px rgba(0,0,0,0.1)" : "0 2px 12px rgba(0,0,0,0.04)",
-      cursor: "pointer", transition: "all 0.3s ease", transform: hover ? "translateY(-3px)" : "none",
-      animation: "fadeIn 0.5s ease",
-    }}>
-      <div style={{ display: "flex", gap: "10px", marginBottom: "16px", flexWrap: "wrap", alignItems: "center" }}>
-        <span style={{ background: "#10b981", color: "#fff", fontSize: "11px", fontWeight: "700", padding: "3px 12px", borderRadius: "4px", letterSpacing: "0.05em" }}>TODAY&apos;S TOP</span>
-        <CategoryPill category={item.category} />
-        <SourceBadge type={item.sourceType} />
-        {(item.isGenerated || /^[fg]/.test(item.id || "")) && (
-          <span style={{ background: "#fef3c7", color: "#92400e", fontSize: "11px", fontWeight: "700", padding: "3px 10px", borderRadius: "4px", border: "1px solid #fcd34d" }}>✨ AI生成</span>
-        )}
-        <span style={{ color: "#10b981", fontSize: "13px", fontWeight: "700", marginLeft: "auto" }}>{timeLabel(item.created_utc)}</span>
-      </div>
-      <h1 style={{ color: "#1A1A1A", fontSize: "24px", fontWeight: "800", lineHeight: "1.5", marginBottom: "12px" }}>{item.titleJa || item.title}</h1>
-      {item.titleJa && <p style={{ color: "#999", fontSize: "13px", lineHeight: "1.5", marginBottom: "16px" }}>{item.title}</p>}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <div style={{ display: "flex", gap: "16px", color: "#888", fontSize: "13px" }}>
-          <span>{item.sourceType === "hn" ? `⬆ ${item.score?.toLocaleString()}` : `▶ ${formatViews(item.score)}`}</span>
-          <span>💬 {item.num_comments?.toLocaleString()}</span>
-          <span style={{ color: "#aaa" }}>{item.source}</span>
-        </div>
-        <span style={{
-          background: hover ? "#1A1A1A" : "#10b981", color: "#fff",
-          padding: "8px 20px", borderRadius: "8px", fontSize: "13px", fontWeight: "700",
-          transition: "all 0.2s",
-        }}>詳細 + AI翻訳 →</span>
-      </div>
-    </div>
-  );
-}
-
-/* ─── News Card ─── */
-function NewsCard({ item, onClick, index }) {
-  const [hover, setHover] = useState(false);
-  const isYT = item.sourceType === "yt";
-  return (
-    <div onClick={() => onClick(item)} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} style={{
-      background: "#FFFFFF", borderRadius: "12px", overflow: "hidden",
-      boxShadow: hover ? "0 8px 28px rgba(0,0,0,0.1)" : "0 1px 6px rgba(0,0,0,0.04)",
-      cursor: "pointer", transition: "all 0.2s ease", transform: hover ? "translateY(-2px)" : "none",
-      animation: `fadeIn 0.4s ease ${index * 0.05}s both`,
-    }}>
-      {/* YouTube thumbnail */}
-      {isYT && (
-        <div style={{ position: "relative", paddingBottom: "56.25%", background: "#f0ebe3" }}>
-          <img
-            src={`https://img.youtube.com/vi/${item.id}/mqdefault.jpg`}
-            alt=""
-            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
-            loading="lazy"
-          />
-          <div style={{ position: "absolute", bottom: "8px", right: "8px", background: "rgba(0,0,0,0.75)", color: "#fff", fontSize: "11px", fontWeight: "600", padding: "2px 8px", borderRadius: "4px" }}>▶ {formatViews(item.score)}</div>
-        </div>
-      )}
-      <div style={{ padding: "16px" }}>
-        <div style={{ display: "flex", gap: "6px", marginBottom: "10px", flexWrap: "wrap", alignItems: "center" }}>
-          <SourceBadge type={item.sourceType} />
-          <CategoryPill category={item.category} />
-          {(item.isGenerated || /^[fg]/.test(item.id || "")) && (
-            <span style={{ background: "#fef3c7", color: "#92400e", fontSize: "10px", fontWeight: "700", padding: "2px 8px", borderRadius: "4px", border: "1px solid #fcd34d" }}>✨ AI生成</span>
-          )}
-          <span style={{ color: "#10b981", fontSize: "12px", fontWeight: "600", marginLeft: "auto" }}>{timeLabel(item.created_utc)}</span>
-        </div>
-        <h3 style={{ color: "#1A1A1A", fontSize: "14px", fontWeight: "700", lineHeight: "1.6", marginBottom: "6px" }}>{item.titleJa || item.title}</h3>
-        {item.titleJa && <p style={{ color: "#bbb", fontSize: "11px", lineHeight: "1.4", marginBottom: "10px" }}>{item.title.slice(0, 80)}{item.title.length > 80 ? "..." : ""}</p>}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div style={{ display: "flex", gap: "12px", color: "#aaa", fontSize: "12px" }}>
-            {!isYT && <span>{item.sourceType === "hn" ? `⬆ ${item.score}` : `▶ ${formatViews(item.score)}`}</span>}
-            <span>💬 {item.num_comments?.toLocaleString()}</span>
-          </div>
-          <span style={{
-            color: hover ? "#fff" : "#10b981", background: hover ? "#10b981" : "#ecfdf5",
-            padding: "4px 14px", borderRadius: "6px", fontSize: "12px", fontWeight: "600", transition: "all 0.2s",
-          }}>詳細 + AI翻訳</span>
         </div>
       </div>
     </div>
