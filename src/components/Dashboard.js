@@ -328,6 +328,9 @@ function HeroCard({ item, onClick }) {
         <span style={{ background: "#10b981", color: "#fff", fontSize: "11px", fontWeight: "700", padding: "3px 12px", borderRadius: "4px", letterSpacing: "0.05em" }}>TODAY&apos;S TOP</span>
         <CategoryPill category={item.category} />
         <SourceBadge type={item.sourceType} />
+        {(item.isGenerated || /^[fg]/.test(item.id || "")) && (
+          <span style={{ background: "#fef3c7", color: "#92400e", fontSize: "11px", fontWeight: "700", padding: "3px 10px", borderRadius: "4px", border: "1px solid #fcd34d" }}>✨ AI生成</span>
+        )}
         <span style={{ color: "#10b981", fontSize: "13px", fontWeight: "700", marginLeft: "auto" }}>{timeLabel(item.created_utc)}</span>
       </div>
       <h1 style={{ color: "#1A1A1A", fontSize: "24px", fontWeight: "800", lineHeight: "1.5", marginBottom: "12px" }}>{item.titleJa || item.title}</h1>
@@ -375,6 +378,9 @@ function NewsCard({ item, onClick, index }) {
         <div style={{ display: "flex", gap: "6px", marginBottom: "10px", flexWrap: "wrap", alignItems: "center" }}>
           <SourceBadge type={item.sourceType} />
           <CategoryPill category={item.category} />
+          {(item.isGenerated || /^[fg]/.test(item.id || "")) && (
+            <span style={{ background: "#fef3c7", color: "#92400e", fontSize: "10px", fontWeight: "700", padding: "2px 8px", borderRadius: "4px", border: "1px solid #fcd34d" }}>✨ AI生成</span>
+          )}
           <span style={{ color: "#10b981", fontSize: "12px", fontWeight: "600", marginLeft: "auto" }}>{timeLabel(item.created_utc)}</span>
         </div>
         <h3 style={{ color: "#1A1A1A", fontSize: "14px", fontWeight: "700", lineHeight: "1.6", marginBottom: "6px" }}>{item.titleJa || item.title}</h3>
@@ -591,8 +597,16 @@ export default function Dashboard() {
   async function generateNews() {
     try {
       const text = await callClaude([{ role: "user", content: `AI業界のリアルなYouTube動画風ニュースを8件生成してください。JSONのみ:\n[{"id":"g1","title":"英語タイトル","titleJa":"日本語（40字以内）","source":"チャンネル名","author":"チャンネル名","score":数値,"num_comments":数値,"created_utc":${Math.floor(Date.now()/1000)-3600},"permalink":"https://www.youtube.com/watch?v=dQw4w9WgXcQ","category":"研究|ツール|ビジネス|モデル","sourceType":"yt"}]` }]);
-      try { return JSON.parse(text); } catch (parseErr) { console.error("generateNews JSON parse failed:", text); throw parseErr; }
-    } catch (e) { console.error("generateNews error:", e.message); return FALLBACK_NEWS; }
+      try {
+        const parsed = JSON.parse(text);
+        // AI生成フラグを付与（generateNews由来も明示）
+        return parsed.map(n => ({ ...n, isGenerated: true }));
+      } catch (parseErr) { console.error("generateNews JSON parse failed:", text); throw parseErr; }
+    } catch (e) {
+      console.error("generateNews error:", e.message);
+      // FALLBACK_NEWS にも AI生成フラグを付与
+      return FALLBACK_NEWS.map(n => ({ ...n, isGenerated: true }));
+    }
   }
 
   const filtered = filter === "全て" ? news : news.filter(n => n.category === filter);
